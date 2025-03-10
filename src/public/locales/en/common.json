@@ -1,0 +1,24 @@
+{
+  "title": "Manage Your Tasks Effortlessly",
+  "subtitle": "A powerful and user-friendly task management platform with authentication, role-based access, sharing functionality, multilingual support, and more.",
+  "signup": "Get Started - Sign Up",
+  "login": "Already have an account? Login",
+  "features": {
+    "task": {
+      "title": "Task Management",
+      "desc": "Create, update, and organize your todo lists and tasks easily."
+    },
+    "share": {
+      "title": "Share with Others",
+      "desc": "Share your todo lists with teammates with editable or read-only access."
+    },
+    "lang": {
+      "title": "Multilingual Support",
+      "desc": "Use the app in English or French with a built-in language switcher."
+    },
+    "auth": {
+      "title": "Secure Authentication",
+      "desc": "Signup, login, and password reset with secure authentication."
+    }
+  }
+}

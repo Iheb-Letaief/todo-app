@@ -1,0 +1,24 @@
+{
+  "title": "Gérez vos tâches facilement",
+  "subtitle": "Une application de gestion des tâches simple et puissante avec authentification, gestion des rôles, partage, multilingue et plus encore.",
+  "signup": "Commencer - Créer un compte",
+  "login": "Vous avez déjà un compte ? Connexion",
+  "features": {
+    "task": {
+      "title": "Gestion des Tâches",
+      "desc": "Créez, mettez à jour et organisez vos listes et tâches facilement."
+    },
+    "share": {
+      "title": "Partage avec d'autres",
+      "desc": "Partagez vos listes avec d'autres utilisateurs en mode lecture ou édition."
+    },
+    "lang": {
+      "title": "Support Multilingue",
+      "desc": "Utilisez l’application en anglais ou en français avec un sélecteur de langue."
+    },
+    "auth": {
+      "title": "Authentification Sécurisée",
+      "desc": "Inscription, connexion et réinitialisation de mot de passe sécurisés."
+    }
+  }
+}
