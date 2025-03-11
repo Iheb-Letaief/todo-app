@@ -36,7 +36,12 @@ export default function Login() {
             const { token } = response.data;
             sessionStorage.setItem('authToken', token);
             sessionStorage.setItem('userId', response.data.user.id.toString());
-            router.push("/dashboard");
+            console.log(response.data.user.role);
+            if(response.data.user.role === 'admin') {
+                router.push("/admin");
+            } else {
+                router.push("/dashboard");
+            }
         } catch (error) {
             setErrorMessage("Invalid email or password");
         }

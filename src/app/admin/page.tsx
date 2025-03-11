@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
     return (
         <div className="max-w-5xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
+            <h1 className="text-3xl text-gray-950 font-bold mb-6 flex items-center gap-2">
                 <IconUserShield size={28} /> {t('Admin Dashboard')}
             </h1>
 
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
                         {users.map((user) => (
                             <tr key={user._id} className="border-t border-gray-200">
                                 <td className="px-4 py-3 text-gray-900">{user.email}</td>
-                                <td className="px-4 py-3 capitalize">{user.role}</td>
+                                <td className="px-4 py-3 text-gray-900 capitalize">{user.role}</td>
                                 <td className="px-4 py-3 text-right">
                                     {user.role !== 'admin' ? (
                                         <button

@@ -15,7 +15,7 @@ export default async function authRoutes(fastify, options) {
     // User signup
     fastify.post("/signup", async (req, reply) => {
         try {
-            const { name, email, password } = req.body;
+            const { name, email, password, role } = req.body;
 
             // Check if user exists
             const existingUser = await User.findOne({ email });
@@ -32,6 +32,7 @@ export default async function authRoutes(fastify, options) {
                 name,
                 email,
                 password: hashedPassword,
+                role: role === 'admin' ? 'admin' : 'user', // Set role to 'admin' if provided, otherwise 'user'
             });
 
             await user.save();
@@ -148,7 +149,7 @@ export async function authenticate(request, reply) {
         if (!authHeader) throw new Error("No token provided");
 
         const token = authHeader.split(" ")[1];
-        request.user = await request.jwtVerify(); // <-- Corrected this line
+        request.user = await request.jwtVerify();
     } catch (error) {
         return reply.status(401).send({ message: "Unauthorized" });
     }

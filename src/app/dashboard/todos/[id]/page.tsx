@@ -236,7 +236,7 @@ export default function TodoDetailPage() {
             <div className="mb-6 flex items-center gap-2">
                 <button
                     onClick={() => router.push('/dashboard')}
-                    className="text-sm text-gray-600 hover:underline flex items-center"
+                    className="cursor-pointer text-sm text-gray-600 hover:underline flex items-center"
                 >
                     <IconChevronLeft size={16} /> Back to Dashboard
                 </button>
