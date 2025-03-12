@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import {
     IconPlus,
     IconTrash,
@@ -12,6 +13,7 @@ import {
     IconMoon,
     IconSun,
 } from '@tabler/icons-react';
+import {useSession} from "next-auth/react";
 
 type Task = {
     title: string;
@@ -37,6 +39,7 @@ type TodoList = {
 };
 
 export default function DashboardPage() {
+    const { t } = useTranslation();
     const [todoLists, setTodoLists] = useState<TodoList[]>([]);
     const [newTitle, setNewTitle] = useState('');
     const [user, setUser] = useState<{ name: string } | null>(null);
@@ -45,6 +48,8 @@ export default function DashboardPage() {
     const [initialLoading, setInitialLoading] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
     const router = useRouter();
+
+    // const {data: session} = useSession();
 
     useEffect(() => {
         const fetchTodos = async () => {
@@ -170,8 +175,8 @@ export default function DashboardPage() {
     return (
         <div className="max-w-5xl mx-auto p-6 space-y-6">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-4xl text-gray-950 font-bold text-center">📋 My Todo Lists</h1>
-                {user && <span className="text-xl text-gray-700">{user.name}</span>}
+                <h1 className="text-4xl text-gray-950 font-bold text-center">{t('dashboard.title')}</h1>
+                {user && <span className="text-xl text-gray-700">{t('dashboard.welcome')}, {user.name}</span>}
 
                 {/*<button*/}
                 {/*    onClick={() => setDarkMode(!darkMode)}*/}
@@ -188,7 +193,7 @@ export default function DashboardPage() {
                         type="text"
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
-                        placeholder="New List Title"
+                        placeholder={t('dashboard.create.placeholder')}
                         className="border border-gray-300 rounded-md px-4 py-2 w-full bg-white  text-gray-900"
                     />
                     <button
@@ -197,7 +202,7 @@ export default function DashboardPage() {
                         className="cursor-pointer bg-blue-600 hover:bg-blue-900 text-white px-4 py-2 rounded-md flex items-center gap-1"
                     >
                         {loading ? <IconLoader className="animate-spin" size={18} /> : <IconPlus size={18} />}
-                        Add
+                        {t('dashboard.create.add')}
                     </button>
                 </div>
             </div>
@@ -231,7 +236,7 @@ export default function DashboardPage() {
                                     {todo.title}
                                 </h2>
                                 <span className="text-sm text-gray-500 ">
-                                    {getCompletion(todo)} done
+                                    {getCompletion(todo)} {t('dashboard.stats.completion')}
                                 </span>
                             </div>
 
@@ -240,13 +245,13 @@ export default function DashboardPage() {
                                     onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
                                     className="cursor-pointer flex items-center gap-1 text-blue-600 hover:underline"
                                 >
-                                    <IconPencil size={16} /> View / Edit
+                                    <IconPencil size={16} /> {t('dashboard.actions.viewEdit')}
                                 </button>
                                 <button
                                     onClick={() => handleDelete(todo._id)}
                                     className="cursor-pointer flex items-center gap-1 text-red-600 hover:underline"
                                 >
-                                    <IconTrash size={16} /> Delete
+                                    <IconTrash size={16} /> {t('dashboard.actions.delete')}
                                 </button>
                             </div>
                         </div>
@@ -254,14 +259,14 @@ export default function DashboardPage() {
                 ) : (
                     <div className="col-span-full flex flex-col items-center text-gray-500 mt-8">
                         <IconClipboardX size={48} />
-                        <p className="mt-2 text-center">You don't have any todo lists yet. Start by creating one!</p>
+                        <p className="mt-2 text-center">{t('dashboard.lists.empty')}</p>
                     </div>
                 )}
             </div>
 
             {/* Shared Todo Lists */}
             <div className="mt-10">
-                <h2 className="text-2xl text-gray-950 font-bold mb-4">Shared Todo Lists</h2>
+                <h2 className="text-2xl text-gray-950 font-bold mb-4">{t('dashboard.lists.shared.title')}</h2>
                 <div className="grid md:grid-cols-2 gap-6">
                     {sharedTodoLists.length > 0 ? (
                         sharedTodoLists.map((todo) => (
@@ -275,7 +280,7 @@ export default function DashboardPage() {
                                         {todo.title}
                                     </h2>
                                     <span className="text-sm text-gray-500 ">
-                            {getCompletion(todo)} done
+                            {getCompletion(todo)} {t('dashboard.stats.completion')}
                         </span>
                                 </div>
 
@@ -284,7 +289,7 @@ export default function DashboardPage() {
                                         onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
                                         className="cursor-pointer flex items-center gap-1 text-blue-600 hover:underline"
                                     >
-                                        <IconPencil size={16} /> View / Edit
+                                        <IconPencil size={16} /> {t('dashboard.actions.viewEdit')}
                                     </button>
                                 </div>
                             </div>
@@ -292,7 +297,7 @@ export default function DashboardPage() {
                     ) : (
                         <div className="col-span-full flex flex-col items-center text-gray-500 mt-8">
                             <IconClipboardX size={48} />
-                            <p className="mt-2 text-center">No shared todo lists available.</p>
+                            <p className="mt-2 text-center">{t('dashboard.lists.shared.empty')}</p>
                         </div>
                     )}
                 </div>

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import {useTranslation} from "react-i18next";
 
 const ForgotPassword = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,12 +26,12 @@ const ForgotPassword = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setMessage("✅ Password reset email sent! Check your inbox.");
+                setMessage(t('auth.forgotPassword.successMessage'));
             } else {
-                setMessage(`❌ ${data.message || "Failed to send email."}`);
+                setMessage(`❌ ${data.message || t('auth.forgotPassword.errorMessage')}`);
             }
         } catch (error) {
-            setMessage("❌ An error occurred. Please try again.");
+            setMessage(t('auth.forgotPassword.errorMessage'));
         }
 
         setLoading(false);
@@ -38,12 +40,10 @@ const ForgotPassword = () => {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
             <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
-                <h2 className="text-2xl  font-bold text-center text-gray-950">
-                    Forgot Password
-                </h2>
-                <p className="text-center text-sm text-gray-600">
-                    Enter your email to receive a password reset link.
-                </p>
+                <h2 className="text-2xl font-bold text-center text-gray-950">{t('auth.forgotPassword.title')}</h2>
+
+                <p className="text-center text-sm text-gray-600">{t('auth.forgotPassword.subtitle')}</p>
+
 
                 {message && <p className="text-center text-sm text-gray-700">{message}</p>}
 
@@ -52,7 +52,7 @@ const ForgotPassword = () => {
                     <div>
                         <input
                             type="email"
-                            placeholder="Your Email"
+                            placeholder={t('auth.forgotPassword.emailPlaceholder')}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -66,7 +66,7 @@ const ForgotPassword = () => {
                         disabled={loading}
                         className="w-full cursor-pointer rounded-md bg-blue-500 p-3 text-white transition hover:bg-blue-600 disabled:bg-gray-400"
                     >
-                        {loading ? "Sending..." : "Send Reset Link"}
+                        {loading ? t('auth.forgotPassword.loading') : t('auth.forgotPassword.submitButton')}
                     </button>
                 </form>
 
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
                         href="/login"
                         className="text-sm text-blue-500 transition hover:text-blue-700"
                     >
-                        Back to Login
+                        {t('auth.forgotPassword.loginLink')}
                     </a>
                 </div>
             </div>

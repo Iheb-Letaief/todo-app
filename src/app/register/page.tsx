@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
+import {useTranslation} from "react-i18next";
 
 const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
@@ -20,6 +21,7 @@ const schema = yup.object().shape({
 });
 
 export default function Signup() {
+    const { t }= useTranslation();
     const {
         register,
         handleSubmit,
@@ -46,13 +48,13 @@ export default function Signup() {
 
             const responseData = await response.json();
             if (response.ok) {
-                setMessage("✅ Account created successfully! Redirecting...");
+                setMessage(t('auth.register.successMessage'));
                 setTimeout(() => router.push("/login"), 3000);
             } else {
-                setMessage(`❌ ${responseData.message || "Signup failed."}`);
+                setMessage(`❌ ${responseData.message || t('auth.register.errorMessage')}`);
             }
         } catch (error) {
-            setMessage("❌ An error occurred. Please try again.");
+            setMessage(t('auth.register.errorMessage'));
         }
 
         setLoading(false);
@@ -62,9 +64,8 @@ export default function Signup() {
         <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
             <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
                 <h2 className="text-2xl font-bold text-center text-gray-900">Sign Up</h2>
-                <p className="text-center text-sm text-gray-600">
-                    Create an account to manage your tasks.
-                </p>
+                <p className="text-center text-sm text-gray-600">{t('auth.register.subtitle')}</p>
+
 
                 {message && <p className="text-center text-sm text-gray-700">{message}</p>}
 
@@ -73,7 +74,7 @@ export default function Signup() {
                     <div>
                         <input
                             {...register("name")}
-                            placeholder="Full Name"
+                            placeholder={t('auth.register.namePlaceholder')}
                             className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                         <p className="text-sm text-red-500">{errors.name?.message}</p>
@@ -84,7 +85,7 @@ export default function Signup() {
                         <input
                             {...register("email")}
                             type="email"
-                            placeholder="Email"
+                            placeholder={t('auth.register.emailPlaceholder')}
                             className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                         <p className="text-sm text-red-500">{errors.email?.message}</p>
@@ -95,7 +96,7 @@ export default function Signup() {
                         <input
                             {...register("password")}
                             type="password"
-                            placeholder="Password"
+                            placeholder={t('auth.register.passwordPlaceholder')}
                             className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                         <p className="text-sm text-red-500">{errors.password?.message}</p>
@@ -106,7 +107,7 @@ export default function Signup() {
                         <input
                             {...register("confirmPassword")}
                             type="password"
-                            placeholder="Confirm Password"
+                            placeholder={t('auth.register.confirmPasswordPlaceholder')}
                             className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                         <p className="text-sm text-red-500">{errors.confirmPassword?.message}</p>
@@ -118,14 +119,14 @@ export default function Signup() {
                             className="w-full rounded-md bg-blue-500 p-3 text-white transition hover:bg-blue-600 disabled:bg-gray-400"
                     >
 
-                        {loading ? "Signing up..." : "Sign Up"}
+                        {loading ? t('auth.register.loading') : t('auth.register.submitButton')}
                     </button>
                 </form>
 
                 {/* Links */}
                 <div className="text-center">
                     <a href="/login" className="text-sm text-blue-500 transition hover:text-blue-700">
-                        Already have an account? Login
+                        {t('auth.register.loginLink')}
                     </a>
                 </div>
             </div>

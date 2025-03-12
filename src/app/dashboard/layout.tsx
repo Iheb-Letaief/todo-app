@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import LogoutButton from "@/components/LogoutButton";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -17,12 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="relative min-h-screen flex flex-col">
             <main className="flex-grow mb-16">{children}</main>
-            <button
-                onClick={handleLogout}
-                className="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
-            >
-                Logout
-            </button>
+            <LogoutButton />
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import {
     IconChevronLeft,
     IconPlus,
@@ -27,6 +28,7 @@ type SharedUser = {
 export default function TodoDetailPage() {
     const { id } = useParams();
     const router = useRouter();
+    const { t } = useTranslation();
 
     const [title, setTitle] = useState('');
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -62,17 +64,11 @@ export default function TodoDetailPage() {
                 setTitle(data.title);
                 setTasks(data.tasks || []);
 
-                console.log(data.userId.toString());
-                console.log(userId);
-                if(data.userId.toString() === userId) {
+                if (data.userId.toString() === userId) {
                     setCanUserEdit(true);
                 } else {
                     setCanUserEdit(data.sharedWith.some((user: any) => user.userId === userId && user.canEdit));
                 }
-                console.log(data);
-                console.log(data.sharedWith.some((user: any) => user.userId === userId && user.canEdit));
-                console.log(canUserEdit);
-
             } catch (err) {
                 console.error('Failed to fetch todo list:', err);
             } finally {
@@ -238,7 +234,7 @@ export default function TodoDetailPage() {
                     onClick={() => router.push('/dashboard')}
                     className="cursor-pointer text-sm text-gray-600 hover:underline flex items-center"
                 >
-                    <IconChevronLeft size={16} /> Back to Dashboard
+                    <IconChevronLeft size={16} /> {t('todoDetail.back')}
                 </button>
             </div>
 
@@ -256,7 +252,7 @@ export default function TodoDetailPage() {
                     type="text"
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder="New task title"
+                    placeholder={t('todoDetail.addTaskPlaceholder')}
                     className="border text-gray-950 placeholder-gray-400 border-gray-300 px-4 py-2 rounded-md w-full"
                 />
                 <button
@@ -264,7 +260,7 @@ export default function TodoDetailPage() {
                     disabled={!canUserEdit}
                     className={`cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-1 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
                 >
-                    <IconPlus size={18} /> Add
+                    <IconPlus size={18} /> {t('todoDetail.addTaskButton')}
                 </button>
             </div>
 
@@ -279,7 +275,7 @@ export default function TodoDetailPage() {
                 <>
                     {incompleteTasks.length > 0 && (
                         <div className="mb-6">
-                            <h2 className="font-semibold mb-2 text-gray-700">Tasks</h2>
+                            <h2 className="font-semibold mb-2 text-gray-700">{t('todoDetail.tasks')}</h2>
                             <ul className="space-y-2">
                                 {incompleteTasks.map((task, index) => (
                                     <li
@@ -313,7 +309,7 @@ export default function TodoDetailPage() {
 
                     {completedTasks.length > 0 && (
                         <div>
-                            <h2 className="font-semibold mb-2 text-gray-700">Completed Tasks</h2>
+                            <h2 className="font-semibold mb-2 text-gray-700">{t('todoDetail.completedTasks')}</h2>
                             <ul className="space-y-2">
                                 {completedTasks.map((task, index) => (
                                     <li
@@ -344,19 +340,19 @@ export default function TodoDetailPage() {
                         </div>
                     )}
 
-                    {tasks.length === 0 && <p className="text-gray-600">No tasks added yet.</p>}
+                    {tasks.length === 0 && <p className="text-gray-600">{t('todoDetail.noTasks')}</p>}
                 </>
             )}
 
             {/* Share Section */}
             <div className="mt-10">
-                <h2 className="font-semibold mb-2 text-gray-700">Share This Todo List</h2>
+                <h2 className="font-semibold mb-2 text-gray-700">{t('todoDetail.share.title')}</h2>
 
                 {/* Share form */}
                 <div className="flex gap-2 mb-4">
                     <input
                         type="email"
-                        placeholder="User's email"
+                        placeholder={t('todoDetail.share.emailPlaceholder')}
                         value={shareEmail}
                         onChange={(e) => setShareEmail(e.target.value)}
                         className="border text-gray-950 placeholder-gray-400 border-gray-300 px-4 py-2 rounded-md w-full"
@@ -365,18 +361,17 @@ export default function TodoDetailPage() {
                         value={canEdit ? 'edit' : 'view'}
                         onChange={(e) => setCanEdit(e.target.value === 'edit')}
                         disabled={!canUserEdit}
-
                         className={`border border-gray-300 rounded-md px-3 py-2 text-gray-700 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
                     >
-                        <option value="view">Can View</option>
-                        <option value="edit">Can Edit</option>
+                        <option value="view">{t('todoDetail.share.permission.view')}</option>
+                        <option value="edit">{t('todoDetail.share.permission.edit')}</option>
                     </select>
                     <button
                         onClick={handleShare}
                         disabled={!canUserEdit}
                         className={`cursor-pointer bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
                     >
-                        Share
+                        {t('todoDetail.share.shareButton')}
                     </button>
                 </div>
 
@@ -398,7 +393,7 @@ export default function TodoDetailPage() {
                                     <div>
                                         <p className="text-gray-900">{user.email}</p>
                                         <p className="cursor-pointer text-sm text-gray-500">
-                                            Access: {user.canEdit ? 'Can Edit' : 'Can View'}
+                                            Access: {user.canEdit ? t('todoDetail.share.permission.edit') : t('todoDetail.share.permission.view')}
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
@@ -407,25 +402,24 @@ export default function TodoDetailPage() {
                                             disabled={!canUserEdit}
                                             className={`cursor-pointer text-blue-600 hover:text-blue-800 text-sm ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
                                         >
-                                            Toggle Permission
+                                            {t('todoDetail.share.togglePermission')}
                                         </button>
                                         <button
                                             onClick={() => handleUnshare(user.email)}
                                             disabled={!canUserEdit}
                                             className={`cursor-pointer text-red-600 hover:text-red-800 text-sm ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
                                         >
-                                            Unshare
+                                            {t('todoDetail.share.unshare')}
                                         </button>
                                     </div>
                                 </li>
                             ))}
                         </ul>
                     ) : (
-                        <p className="text-gray-600">Not shared with anyone yet.</p>
+                        <p className="text-gray-600">{t('todoDetail.share.notShared')}</p>
                     )
                 )}
             </div>
         </div>
     );
 }
-

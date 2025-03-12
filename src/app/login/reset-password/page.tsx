@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {useTranslation} from "react-i18next";
 
 const ResetPassword = () => {
+    const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get("token"); // Get the token from URL
@@ -39,13 +41,13 @@ const ResetPassword = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setMessage("✅ Password reset successfully! Redirecting...");
+                setMessage(t('auth.resetPassword.successMessage'));
                 setTimeout(() => router.push("/login"), 3000);
             } else {
-                setMessage(`❌ ${data.message || "Something went wrong."}`);
+                setMessage(`❌ ${data.message || t('auth.resetPassword.errorMessage')}`);
             }
         } catch (error) {
-            setMessage("❌ An error occurred. Please try again.");
+            setMessage(t('auth.resetPassword.errorMessage'));
         }
         setLoading(false);
     };
@@ -54,7 +56,7 @@ const ResetPassword = () => {
         <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
             <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
                 <h2 className="text-2xl font-bold text-center text-gray-900">
-                    Reset Password
+                    {t('auth.resetPassword.title')}
                 </h2>
 
                 {message && (
@@ -66,7 +68,7 @@ const ResetPassword = () => {
                     <div>
                         <input
                             type="password"
-                            placeholder="New Password"
+                            placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -78,7 +80,7 @@ const ResetPassword = () => {
                     <div>
                         <input
                             type="password"
-                            placeholder="Confirm Password"
+                            placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
@@ -92,7 +94,7 @@ const ResetPassword = () => {
                         disabled={loading}
                         className="w-full rounded-md cursor-pointer bg-blue-500 p-3 text-white transition hover:bg-blue-600 disabled:bg-gray-400"
                     >
-                        {loading ? "Resetting..." : "Reset Password"}
+                        {loading ? t('auth.resetPassword.loading') : t('auth.resetPassword.submitButton')}
                     </button>
                 </form>
 
@@ -102,7 +104,7 @@ const ResetPassword = () => {
                         href="/login"
                         className="text-sm text-blue-500 transition hover:text-blue-700"
                     >
-                        Back to Login
+                        {t('auth.resetPassword.loginLink')}
                     </a>
                 </div>
             </div>

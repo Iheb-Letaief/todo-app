@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconTrash, IconUserShield, IconLoader } from '@tabler/icons-react';
-
-const t = (key: string) => key;
+import { useTranslation } from 'react-i18next';
+import LogoutButton from "@/components/LogoutButton";
 
 type User = {
     _id: string;
@@ -13,6 +13,7 @@ type User = {
 };
 
 export default function AdminDashboard() {
+    const { t } = useTranslation();
     const router = useRouter();
 
     const [users, setUsers] = useState<User[]>([]);
@@ -37,14 +38,14 @@ export default function AdminDashboard() {
                 });
 
                 if (!res.ok) {
-                    setError(t('Failed to fetch users'));
+                    setError(t('admin.fetchError'));
                     return;
                 }
 
                 const data = await res.json();
                 setUsers(data.users || []);
             } catch (err) {
-                setError(t('An error occurred while fetching users'));
+                setError(t('admin.fetchError'));
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -55,7 +56,7 @@ export default function AdminDashboard() {
     }, [token]);
 
     const handleDeleteUser = async (userId: string) => {
-        const confirmDelete = confirm(t('Are you sure you want to delete this user?'));
+        const confirmDelete = confirm(t('admin.deleteConfirm'));
         if (!confirmDelete) return;
 
         setDeletingUserId(userId);
@@ -69,13 +70,13 @@ export default function AdminDashboard() {
             });
 
             if (!res.ok) {
-                alert(t('Failed to delete user'));
+                alert(t('admin.deleteError'));
                 return;
             }
 
             setUsers((prev) => prev.filter((user) => user._id !== userId));
         } catch (err) {
-            alert(t('Error deleting user'));
+            alert(t('admin.deleteError'));
             console.error(err);
         } finally {
             setDeletingUserId(null);
@@ -85,26 +86,27 @@ export default function AdminDashboard() {
     return (
         <div className="max-w-5xl mx-auto p-6">
             <h1 className="text-3xl text-gray-950 font-bold mb-6 flex items-center gap-2">
-                <IconUserShield size={28} /> {t('Admin Dashboard')}
+                <IconUserShield size={28} /> {t('admin.dashboard')}
             </h1>
+            <LogoutButton />
 
             {loading ? (
                 <div className="flex items-center gap-2 text-gray-500 animate-pulse">
                     <IconLoader className="animate-spin" size={20} />
-                    {t('Loading users...')}
+                    {t('admin.loading')}
                 </div>
             ) : error ? (
                 <p className="text-red-600">{error}</p>
             ) : users.length === 0 ? (
-                <p className="text-gray-600">{t('No users found.')}</p>
+                <p className="text-gray-600">{t('admin.noUsers')}</p>
             ) : (
                 <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
                     <table className="min-w-full text-left text-sm">
                         <thead className="bg-gray-100 text-gray-700 font-semibold">
                         <tr>
-                            <th className="px-4 py-3">{t('Email')}</th>
-                            <th className="px-4 py-3">{t('Role')}</th>
-                            <th className="px-4 py-3 text-right">{t('Actions')}</th>
+                            <th className="px-4 py-3">{t('admin.email')}</th>
+                            <th className="px-4 py-3">{t('admin.role')}</th>
+                            <th className="px-4 py-3 text-right">{t('admin.actions')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -120,10 +122,10 @@ export default function AdminDashboard() {
                                             className="text-red-600 hover:text-red-800 flex items-center gap-1 text-sm"
                                         >
                                             <IconTrash size={16} />
-                                            {deletingUserId === user._id ? t('Deleting...') : t('Delete')}
+                                            {deletingUserId === user._id ? t('admin.deleting') : t('admin.delete')}
                                         </button>
                                     ) : (
-                                        <span className="text-gray-400 text-sm">{t('Cannot delete admin')}</span>
+                                        <span className="text-gray-400 text-sm">{t('admin.cannotDeleteAdmin')}</span>
                                     )}
                                 </td>
                             </tr>

@@ -1,47 +1,60 @@
 'use client';
 
 import Link from "next/link";
-
+import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
+  const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-b from-white to-gray-100 text-gray-800">
         <div className="max-w-3xl text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Manage Your Tasks Effortlessly</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            {t('home.hero.title')}
+          </h1>
           <p className="text-lg md:text-xl mb-8">
-            A powerful and user-friendly task management platform with authentication,
-            role-based access, sharing functionality, multilingual support, and more.
+            {t('home.hero.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10">
             <Link href="/register">
               <button className="cursor-pointer bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition">
-                Get Started - Sign Up
+                {t('home.hero.getStarted')}
               </button>
             </Link>
             <Link href="/login">
               <button className="cursor-pointer bg-gray-200 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-300 transition">
-                Already have an account? Login
+                {t('home.hero.login')}
               </button>
             </Link>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 text-left">
             <FeatureCard
-                title="📋 Task Management"
-                description="Create, update, and organize your todo lists and tasks easily."
+                title={t('home.features.taskManagement.title')}
+                description={t('home.features.taskManagement.description')}
             />
             <FeatureCard
-                title="👥 Share with Others"
-                description="Share your todo lists with teammates with editable or read-only access."
+                title={t('home.features.sharing.title')}
+                description={t('home.features.sharing.description')}
             />
             <FeatureCard
-                title="🌐 Multilingual Support"
-                description="Use the app in English or French with a built-in language switcher."
+                title={t('home.features.multilingual.title')}
+                description={t('home.features.multilingual.description')}
             />
             <FeatureCard
-                title="🔐 Secure Authentication"
-                description="Signup, login, and password reset with secure authentication."
+                title={t('home.features.security.title')}
+                description={t('home.features.security.description')}
             />
           </div>
         </div>

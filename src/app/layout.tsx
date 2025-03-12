@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {I18nextProvider} from "react-i18next";
 import i18n from "i18next";
+import {Providers} from "@/app/providers";
+import TranslationToggle from "@/components/ToggleTranslationButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+      <div className="absolute top-4 right-4 z-50">
+        <TranslationToggle/>
+      </div>
+        <Providers>
+            {children}
+        </Providers>
       </body>
     </html>
   );
