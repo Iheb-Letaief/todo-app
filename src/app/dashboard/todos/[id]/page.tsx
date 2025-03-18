@@ -11,6 +11,7 @@ import {
     IconX,
     IconEdit,
 } from '@tabler/icons-react';
+import {useSession} from "next-auth/react";
 
 type Task = {
     _id: string;
@@ -41,7 +42,15 @@ export default function TodoDetailPage() {
     const [sharedUsers, setSharedUsers] = useState<{ email: string; canEdit: boolean }[]>([]);
 
     const userId = typeof window !== 'undefined' ? sessionStorage.getItem('userId') : null;
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('authToken') : null;
+
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            // The user is not authenticated, push them to the login page
+            router.push('/login');
+        }
+    });
+    const token = session?.token;
 
     useEffect(() => {
         const fetchTodo = async () => {

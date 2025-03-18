@@ -3,11 +3,11 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
+import {getSession, signIn } from "next-auth/react";
 import '../i18n';
 
 export default function Login() {
@@ -34,23 +34,41 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: {
+        email: string;
+        password: string;
+    }) => {
         setLoading(true);
         setErrorMessage("");
+
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, data);
-            const { token } = response.data;
-            sessionStorage.setItem('authToken', token);
-            sessionStorage.setItem('userId', response.data.user.id.toString());
-            if(response.data.user.role === 'admin') {
-                router.push("/admin");
+            const result = await signIn("credentials", {
+                email: data.email,
+                password: data.password,
+                redirect: false,
+            });
+
+
+            if (result?.error) {
+                setErrorMessage(t('auth.login.error'));
             } else {
-                router.push("/dashboard");
+                const session = await getSession();
+                if (session?.user?.id) {
+                    sessionStorage.setItem('userId', session.user.id);
+                }
+
+                if (session?.user?.role === 'admin') {
+                    router.replace("/admin");
+                } else {
+                    router.replace("/dashboard");
+                }
+
             }
         } catch (error) {
             setErrorMessage(t('auth.login.error'));
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const toggleLanguage = () => {

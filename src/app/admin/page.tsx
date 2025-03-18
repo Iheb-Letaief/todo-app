@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { IconTrash, IconUserShield, IconLoader } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import LogoutButton from "@/components/LogoutButton";
+import {useSession} from "next-auth/react";
 
 type User = {
     _id: string;
@@ -21,9 +22,11 @@ export default function AdminDashboard() {
     const [error, setError] = useState('');
     const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('authToken') : null;
+    const { data: session } = useSession();
+    const token = session?.token;
 
     useEffect(() => {
+
         if (!token) {
             router.push('/login');
             return;

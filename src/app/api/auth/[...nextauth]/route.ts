@@ -16,7 +16,7 @@ const handler = NextAuth({
                 }
 
                 try {
-                    // Use your existing login endpoint
+                    // Use existing login endpoint
                     const response = await axios.post(
                         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
                         {
@@ -24,6 +24,9 @@ const handler = NextAuth({
                             password: credentials.password,
                         }
                     );
+
+                    console.log("API Response:", response.data); // Log the response
+
 
                     if (response.data && response.data.token) {
                         // Return user data that will be stored in the JWT

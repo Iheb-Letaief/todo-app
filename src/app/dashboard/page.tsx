@@ -13,7 +13,8 @@ import {
     IconMoon,
     IconSun,
 } from '@tabler/icons-react';
-import {useSession} from "next-auth/react";
+import {signIn, useSession} from "next-auth/react";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type Task = {
     title: string;
@@ -49,13 +50,19 @@ export default function DashboardPage() {
     const [darkMode, setDarkMode] = useState(false);
     const router = useRouter();
 
-    // const {data: session} = useSession();
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            // The user is not authenticated, push them to the login page
+            router.push('/login');
+        }
+    });
+
+    // const token = session?.token;
 
     useEffect(() => {
         const fetchTodos = async () => {
-            const token = sessionStorage.getItem('authToken');
-            if (!token) {
-                router.push('/login');
+            if (status !== 'authenticated' || !session?.token) {
                 return;
             }
 
@@ -63,22 +70,17 @@ export default function DashboardPage() {
                 const [todosRes, userRes] = await Promise.all([
                     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos`, {
                         headers: {
-                            Authorization: `Bearer ${token}`,
+                            Authorization: `Bearer ${session.token}`,
                             'Content-Type': 'application/json',
                         },
                     }),
                     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user`, {
                         headers: {
-                            Authorization: `Bearer ${token}`,
+                            Authorization: `Bearer ${session.token}`,
                             'Content-Type': 'application/json',
                         },
                     }),
                 ]);
-
-                if (todosRes.status === 401 || userRes.status === 401) {
-                    router.push('/login');
-                    return;
-                }
 
                 const todosData = await todosRes.json();
                 const userData = await userRes.json();
@@ -94,23 +96,17 @@ export default function DashboardPage() {
         };
 
         fetchTodos();
-    }, []);
+    }, [status, session]);
 
     const handleCreate = async () => {
-        if (!newTitle.trim()) return;
+        if (!newTitle.trim() || !session?.token) return;
         setLoading(true);
-
-        const token = sessionStorage.getItem('authToken');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${session.token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ title: newTitle }),
@@ -121,10 +117,6 @@ export default function DashboardPage() {
             if (res.ok) {
                 setTodoLists((prev) => [...prev, data]);
                 setNewTitle('');
-            } else if (res.status === 401) {
-                router.push('/login');
-            } else {
-                console.error('Failed to add todo:', data);
             }
         } catch (error) {
             console.error('Error adding todo:', error);
@@ -134,27 +126,18 @@ export default function DashboardPage() {
     };
 
     const handleDelete = async (id: string) => {
-        const token = sessionStorage.getItem('authToken');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
+        if (!session?.token) return;
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${session.token}`,
                 },
             });
 
-            const data = await res.json();
-            console.log('API response:', data); // Add this line to log the response
-
             if (res.ok) {
                 setTodoLists((prev) => prev.filter((todo) => todo._id !== id));
-            } else {
-                console.error('Failed to delete todo:', data);
             }
         } catch (error) {
             console.error('Error deleting todo:', error);
