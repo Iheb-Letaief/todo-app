@@ -36,8 +36,8 @@ export const en = {
             submitButton: 'Sign Up',
             loading: 'Signing up...',
             loginLink: 'Already have an account? Login',
-            successMessage: '✅ Account created successfully! Redirecting...',
-            errorMessage: '❌ An error occurred. Please try again.'
+            successMessage: 'Account created successfully! Redirecting...',
+            errorMessage: 'An error occurred. Please try again.'
         },
         forgotPassword: {
             title: 'Forgot Password',
@@ -45,8 +45,8 @@ export const en = {
             emailPlaceholder: 'Your Email',
             submitButton: 'Send Reset Link',
             loading: 'Sending...',
-            successMessage: '✅ Password reset email sent! Check your inbox.',
-            errorMessage: '❌ An error occurred. Please try again.',
+            successMessage: 'Password reset email sent! Check your inbox.',
+            errorMessage: 'An error occurred. Please try again.',
             loginLink: 'Back to Login'
         },
         resetPassword: {
@@ -55,8 +55,8 @@ export const en = {
             confirmPasswordPlaceholder: 'Confirm Password',
             submitButton: 'Reset Password',
             loading: 'Resetting...',
-            successMessage: '✅ Password reset successfully! Redirecting...',
-            errorMessage: '❌ An error occurred. Please try again.',
+            successMessage: 'Password reset successfully! Redirecting...',
+            errorMessage: 'An error occurred. Please try again.',
             loginLink: 'Back to Login'
         }
     },
@@ -80,26 +80,26 @@ export const en = {
         },
         features: {
             taskManagement: {
-                title: '📋 Task Management',
+                title: 'Task Management',
                 description: 'Create, update, and organize your todo lists and tasks easily.'
             },
             sharing: {
-                title: '👥 Share with Others',
+                title: 'Share with Others',
                 description: 'Share your todo lists with teammates with editable or read-only access.'
             },
             multilingual: {
-                title: '🌐 Multilingual Support',
+                title: 'Multilingual Support',
                 description: 'Use the app in English or French with a built-in language switcher.'
             },
             security: {
-                title: '🔐 Secure Authentication',
+                title: 'Secure Authentication',
                 description: 'Signup, login, and password reset with secure authentication.'
             }
         }
     },
 
     dashboard: {
-        title: '📋 My Todo Lists',
+        title: 'My Todo Lists',
         welcome: 'Welcome',
         create: {
             placeholder: 'New List Title',

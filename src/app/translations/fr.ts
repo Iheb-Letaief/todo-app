@@ -36,8 +36,8 @@ export const fr = {
             submitButton: "S'inscrire",
             loading: 'Inscription en cours...',
             loginLink: 'Vous avez déjà un compte ? Connexion',
-            successMessage: '✅ Compte créé avec succès ! Redirection...',
-            errorMessage: '❌ Une erreur est survenue. Veuillez réessayer.'
+            successMessage: 'Compte créé avec succès ! Redirection...',
+            errorMessage: 'Une erreur est survenue. Veuillez réessayer.'
         },
         forgotPassword: {
             title: 'Mot de passe oublié',
@@ -45,8 +45,8 @@ export const fr = {
             emailPlaceholder: 'Votre Email',
             submitButton: 'Envoyer le lien de réinitialisation',
             loading: 'Envoi en cours...',
-            successMessage: '✅ Email de réinitialisation envoyé ! Vérifiez votre boîte de réception.',
-            errorMessage: '❌ Une erreur est survenue. Veuillez réessayer.',
+            successMessage: 'Email de réinitialisation envoyé ! Vérifiez votre boîte de réception.',
+            errorMessage: 'Une erreur est survenue. Veuillez réessayer.',
             loginLink: 'Retour à la connexion'
         },
         resetPassword: {
@@ -55,8 +55,8 @@ export const fr = {
             confirmPasswordPlaceholder: 'Confirmer le mot de passe',
             submitButton: 'Réinitialiser le mot de passe',
             loading: 'Réinitialisation en cours...',
-            successMessage: '✅ Mot de passe réinitialisé avec succès ! Redirection...',
-            errorMessage: '❌ Une erreur est survenue. Veuillez réessayer.',
+            successMessage: 'Mot de passe réinitialisé avec succès ! Redirection...',
+            errorMessage: 'Une erreur est survenue. Veuillez réessayer.',
             loginLink: 'Retour à la connexion'
         }
     },
@@ -80,26 +80,26 @@ export const fr = {
         },
         features: {
             taskManagement: {
-                title: '📋 Gestion des tâches',
+                title: 'Gestion des tâches',
                 description: 'Créez, mettez à jour et organisez facilement vos listes de tâches.'
             },
             sharing: {
-                title: '👥 Partage avec autres',
+                title: 'Partage avec autres',
                 description: 'Partagez vos listes avec votre équipe en accès modifiable ou lecture seule.'
             },
             multilingual: {
-                title: '🌐 Support multilingue',
+                title: 'Support multilingue',
                 description: "Utilisez l'application en anglais ou en français avec un sélecteur de langue intégré."
             },
             security: {
-                title: '🔐 Authentification sécurisée',
+                title: 'Authentification sécurisée',
                 description: 'Inscription, connexion et réinitialisation du mot de passe avec authentification sécurisée.'
             }
         }
     },
 
     dashboard: {
-        title: '📋 Mes Listes',
+        title: 'Mes Listes',
         welcome: 'Bienvenue',
         create: {
             placeholder: 'Titre de la nouvelle liste',

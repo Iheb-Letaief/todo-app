@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todo App Project Setup Guide
 
-## Getting Started
+This guide will walk you through the steps to set up and run the Todo App project locally on your machine.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js installed on your system.
+- pnpm installed (optional, but recommended for the frontend).
+- A code editor (e.g., Visual Studio Code).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Backend Environment Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Navigate to the `backend` directory.
+2. Create a `.env` file in the `backend` directory.
+3. Add the following environment variables to the `.env` file:
 
-## Learn More
+   ```env
+   MONGO_URI=mongodb+srv://admin:gHCKA9vp@cluster0.tcvclhe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+   JWT_SECRET=5575b7f7828495c2a5deacf921fa1dd936b1bf0ffb1385e557154c6f966634c0
+   EMAIL_USER=ihebeltaief123@gmail.com
+   EMAIL_PASS="mhbo mbpr xbjp qwmg"
+   FRONTEND_URL=http://localhost:3000
+   ```
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Frontend Environment Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Navigate to the `todo-app` directory (the project root for the frontend).
+2. Create a `.env.local` file in the `todo-app` directory.
+3. Add the following environment variable to the `.env.local` file:
 
-## Deploy on Vercel
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Running the Application
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Start the Backend Server
+
+1. Ensure you are in the `backend` directory.
+2. Install dependencies (if not already installed):
+
+   ```bash
+   npm install
+   ```
+
+3. Run the backend server:
+
+   ```bash
+   npm start
+   ```
+
+   The backend will run on `http://localhost:5000`.
+
+### Start the Frontend Server
+
+1. Ensure you are in the `todo-app` directory.
+2. Install dependencies (if not already installed):
+
+   ```bash
+   pnpm install
+   ```
+
+   (Recommended for better performance) If you don’t have `pnpm`, install it globally first:
+
+   ```bash
+   npm install -g pnpm
+   ```
+
+3. Run the frontend development server:
+
+   ```bash
+   pnpm run dev
+   ```
+
+   The frontend will run on `http://localhost:3000`.
+
+## Access the Application
+
+- Open your browser and navigate to `http://localhost:3000` to use the Todo App.
+- Ensure both the backend and frontend servers are running simultaneously for full functionality.
+- Admin credentials for testing the admin dashboard:
+  admin@gmail.com | admin123
+
+## Notes
+
+- **Backend Port:** The backend uses port `5000`. Ensure this port is free or update the `.env` and `.env.local` files if you change it.
+- **Security Warning:** The provided credentials are for development purposes only. For production, replace them with secure values and avoid exposing sensitive data.
+- **Troubleshooting:** If you encounter issues, verify that all environment variables are correctly set and that there are no typos in the files.
+

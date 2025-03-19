@@ -32,7 +32,7 @@ export default async function authRoutes(fastify, options) {
                 name,
                 email,
                 password: hashedPassword,
-                role: role === 'admin' ? 'admin' : 'user', // Set role to 'admin' if provided, otherwise 'user'
+                role: role === 'admin' ? 'admin' : 'user',
             });
 
             await user.save();
@@ -154,18 +154,4 @@ export async function authenticate(request, reply) {
         return reply.status(401).send({ message: "Unauthorized" });
     }
 }
-//
-// export async function authenticateAdmin(request, reply) {
-//     try {
-//         const authHeader = request.headers.authorization;
-//         if (!authHeader) throw new Error("No token provided");
-//
-//         const token = authHeader.split(" ")[1];
-//         const decoded = await request.jwtVerify();
-//         if (decoded.role !== "admin") throw new Error("Unauthorized");
-//
-//         request.user = decoded;
-//     } catch (error) {
-//         return reply.status(401).send({ message: "Unauthorized" });
-//     }
-// }
+

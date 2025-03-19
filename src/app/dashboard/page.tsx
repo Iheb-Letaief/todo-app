@@ -13,7 +13,7 @@ import {
     IconMoon,
     IconSun,
 } from '@tabler/icons-react';
-import {signIn, useSession} from "next-auth/react";
+import { useSession } from "next-auth/react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 type Task = {

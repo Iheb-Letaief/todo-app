@@ -55,7 +55,10 @@ export default function AdminDashboard() {
             }
         };
 
-        fetchUsers();
+        if (window !== undefined) {
+            fetchUsers();
+        }
+
     }, [token]);
 
     const handleDeleteUser = async (userId: string) => {
@@ -89,27 +92,27 @@ export default function AdminDashboard() {
     return (
         <div className="max-w-5xl mx-auto p-6">
             <h1 className="text-3xl text-gray-950 font-bold mb-6 flex items-center gap-2">
-                <IconUserShield size={28} /> {t('admin.dashboard')}
+                <IconUserShield size={28} /> {t('auth.admin.dashboard')}
             </h1>
             <LogoutButton />
 
             {loading ? (
                 <div className="flex items-center gap-2 text-gray-500 animate-pulse">
                     <IconLoader className="animate-spin" size={20} />
-                    {t('admin.loading')}
+                    {t('auth.admin.loading')}
                 </div>
             ) : error ? (
                 <p className="text-red-600">{error}</p>
             ) : users.length === 0 ? (
-                <p className="text-gray-600">{t('admin.noUsers')}</p>
+                <p className="text-gray-600">{t('auth.admin.noUsers')}</p>
             ) : (
                 <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
                     <table className="min-w-full text-left text-sm">
                         <thead className="bg-gray-100 text-gray-700 font-semibold">
                         <tr>
-                            <th className="px-4 py-3">{t('admin.email')}</th>
-                            <th className="px-4 py-3">{t('admin.role')}</th>
-                            <th className="px-4 py-3 text-right">{t('admin.actions')}</th>
+                            <th className="px-4 py-3">{t('auth.admin.email')}</th>
+                            <th className="px-4 py-3">{t('auth.admin.role')}</th>
+                            <th className="px-4 py-3 text-right">{t('auth.admin.actions')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -125,10 +128,10 @@ export default function AdminDashboard() {
                                             className="text-red-600 hover:text-red-800 flex items-center gap-1 text-sm"
                                         >
                                             <IconTrash size={16} />
-                                            {deletingUserId === user._id ? t('admin.deleting') : t('admin.delete')}
+                                            {deletingUserId === user._id ? t('auth.admin.deleting') : t('auth.admin.delete')}
                                         </button>
                                     ) : (
-                                        <span className="text-gray-400 text-sm">{t('admin.cannotDeleteAdmin')}</span>
+                                        <span className="text-gray-400 text-sm">{t('auth.admin.cannotDeleteAdmin')}</span>
                                     )}
                                 </td>
                             </tr>
