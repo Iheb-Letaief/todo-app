@@ -46,7 +46,6 @@ export default function TodoDetailPage() {
     const { data: session, status } = useSession({
         required: true,
         onUnauthenticated() {
-            // The user is not authenticated, push them to the login page
             router.push('/login');
         }
     });
@@ -54,6 +53,10 @@ export default function TodoDetailPage() {
 
     useEffect(() => {
         const fetchTodo = async () => {
+            if (status === 'loading' || !session.token) {
+                return;
+            }
+
             if (!token) {
                 router.push('/login');
                 return;
@@ -85,8 +88,10 @@ export default function TodoDetailPage() {
             }
         };
 
-        fetchTodo();
-    }, [id, token]);
+        if (typeof window !== 'undefined') {
+            fetchTodo();
+        }
+    }, [id, session, status, userId, router]);
 
     const handleAddTask = async () => {
         if (!newTaskTitle.trim()) return;
@@ -146,6 +151,10 @@ export default function TodoDetailPage() {
     useEffect(() => {
         const fetchSharedUsers = async () => {
             try {
+
+                if(status === 'loading' || !session.token) {
+                    return;
+                }
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -165,8 +174,10 @@ export default function TodoDetailPage() {
             }
         };
 
-        fetchSharedUsers();
-    }, [id, token]);
+        if (typeof window !== 'undefined') {
+            fetchSharedUsers();
+        }
+    }, [id, session, status]);
 
     const handleShare = async () => {
         if (!shareEmail.trim()) return;
