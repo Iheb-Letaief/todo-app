@@ -14,15 +14,8 @@ This guide will walk you through the steps to set up and run the Todo App projec
 
 1. Navigate to the `backend` directory.
 2. Create a `.env` file in the `backend` directory.
-3. Add the following environment variables to the `.env` file:
+3. Add the environment variables to the `.env` file (check slack for credentials)
 
-   ```env
-   MONGO_URI=mongodb+srv://admin:gHCKA9vp@cluster0.tcvclhe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-   JWT_SECRET=5575b7f7828495c2a5deacf921fa1dd936b1bf0ffb1385e557154c6f966634c0
-   EMAIL_USER=ihebeltaief123@gmail.com
-   EMAIL_PASS="mhbo mbpr xbjp qwmg"
-   FRONTEND_URL=http://localhost:3000
-   ```
 
 
 ### 2. Frontend Environment Setup
