@@ -156,133 +156,141 @@ export default function DashboardPage() {
     }, [darkMode]);
 
     return (
-        <div className="max-w-5xl mx-auto p-6 space-y-6">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-4xl text-gray-950 font-bold text-center">{t('dashboard.title')}</h1>
-                {user && <span className="text-xl text-gray-700">{t('dashboard.welcome')}, {user.name}</span>}
-
-                {/*<button*/}
-                {/*    onClick={() => setDarkMode(!darkMode)}*/}
-                {/*    className="bg-gray-200 p-2 rounded-full"*/}
-                {/*>*/}
-                {/*    {darkMode ? <IconSun size={24} /> : <IconMoon size={24} />}*/}
-                {/*</button>*/}
-            </div>
-
-            {/* Create New Todo */}
-            <div className="bg-white  border border-gray-200 rounded-md p-4 shadow-sm">
-                <div className="flex items-center gap-2">
-                    <input
-                        type="text"
-                        value={newTitle}
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        placeholder={t('dashboard.create.placeholder')}
-                        className="border border-gray-300 rounded-md px-4 py-2 w-full bg-white  text-gray-900"
-                    />
-                    <button
-                        onClick={handleCreate}
-                        disabled={loading}
-                        className="cursor-pointer bg-blue-600 hover:bg-blue-900 text-white px-4 py-2 rounded-md flex items-center gap-1"
-                    >
-                        {loading ? <IconLoader className="animate-spin" size={18} /> : <IconPlus size={18} />}
-                        {t('dashboard.create.add')}
-                    </button>
-                </div>
-            </div>
-
-            {/* Todo List Display */}
-            <div className="grid md:grid-cols-2 gap-6">
-                {initialLoading ? (
-                    // Skeleton Loading
-                    Array.from({ length: 5 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="border rounded-md p-4 shadow-sm animate-pulse space-y-3"
-                        >
-                            <div className="h-5 bg-gray-300 w-3/4 rounded"></div>
-                            <div className="h-4 bg-gray-300 w-1/3 rounded"></div>
-                            <div className="flex justify-end gap-3 mt-4">
-                                <div className="h-4 bg-gray-30 w-16 rounded"></div>
-                                <div className="h-4 bg-gray-300 w-16 rounded"></div>
-                            </div>
+        <div className="page-wrapper">
+            <div className="page-body">
+                <div className="container-xl">
+                    <div className="row mb-4">
+                        <div className="col">
+                            <h1 className="h1 m-0">{t('dashboard.title')}</h1>
                         </div>
-                    ))
-                ) : todoLists.length > 0 ? (
-                    todoLists.map((todo) => (
-                        <div
-                            key={todo._id}
-                            className="border rounded-md p-4 shadow-sm bg-white"
-                        >
-                            <div className="flex justify-between items-center mb-2">
-                                <h2 className="text-lg text-gray-700 font-semibold flex items-center gap-1">
-                                    <IconClipboardList size={20} />
-                                    {todo.title}
-                                </h2>
-                                <span className="text-sm text-gray-500 ">
-                                    {getCompletion(todo)} {t('dashboard.stats.completion')}
-                                </span>
+                        {user &&
+                            <div className="col text-end mr-10">
+                                <span className="text-secondary">{t('dashboard.welcome')}, {user.name}</span>
                             </div>
-
-                            <div className="flex justify-end gap-3 mt-4">
-                                <button
-                                    onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
-                                    className="cursor-pointer flex items-center gap-1 text-blue-600 hover:underline"
-                                >
-                                    <IconPencil size={16} /> {t('dashboard.actions.viewEdit')}
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(todo._id)}
-                                    className="cursor-pointer flex items-center gap-1 text-red-600 hover:underline"
-                                >
-                                    <IconTrash size={16} /> {t('dashboard.actions.delete')}
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="col-span-full flex flex-col items-center text-gray-500 mt-8">
-                        <IconClipboardX size={48} />
-                        <p className="mt-2 text-center">{t('dashboard.lists.empty')}</p>
+                        }
                     </div>
-                )}
-            </div>
 
-            {/* Shared Todo Lists */}
-            <div className="mt-10">
-                <h2 className="text-2xl text-gray-950 font-bold mb-4">{t('dashboard.lists.shared.title')}</h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                    {sharedTodoLists.length > 0 ? (
-                        sharedTodoLists.map((todo) => (
-                            <div
-                                key={todo._id}
-                                className="border rounded-md p-4 shadow-sm bg-white"
-                            >
-                                <div className="flex justify-between items-center mb-2">
-                                    <h2 className="text-lg text-gray-700 font-semibold flex items-center gap-1">
-                                        <IconClipboardList size={20} />
-                                        {todo.title}
-                                    </h2>
-                                    <span className="text-sm text-gray-500 ">
-                            {getCompletion(todo)} {t('dashboard.stats.completion')}
-                        </span>
-                                </div>
-
-                                <div className="flex justify-end gap-3 mt-4">
-                                    <button
-                                        onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
-                                        className="cursor-pointer flex items-center gap-1 text-blue-600 hover:underline"
-                                    >
-                                        <IconPencil size={16} /> {t('dashboard.actions.viewEdit')}
-                                    </button>
-                                </div>
+                    {/* Create New Todo */}
+                    <div className="card mb-4">
+                        <div className="card-body">
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    value={newTitle}
+                                    onChange={(e) => setNewTitle(e.target.value)}
+                                    placeholder={t('dashboard.create.placeholder')}
+                                    className="form-control"
+                                />
+                                <button
+                                    onClick={handleCreate}
+                                    disabled={loading}
+                                    className="btn btn-primary"
+                                >
+                                    {loading ? <IconLoader className="icon icon-tabler-loader animate-spin" /> : <IconPlus className="icon" />}
+                                    {t('dashboard.create.add')}
+                                </button>
                             </div>
-                        ))
-                    ) : (
-                        <div className="col-span-full flex flex-col items-center text-gray-500 mt-8">
-                            <IconClipboardX size={48} />
-                            <p className="mt-2 text-center">{t('dashboard.lists.shared.empty')}</p>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Todo Lists */}
+                    <div className="row">
+                        {initialLoading ? (
+                            // Skeleton Loading
+                            Array.from({ length: 5 }).map((_, i) => (
+                                <div key={i} className="col-md-6 mb-4">
+                                    <div className="card placeholder-glow">
+                                        <div className="card-body">
+                                            <div className="placeholder col-8 mb-3"></div>
+                                            <div className="placeholder col-4"></div>
+                                            <div className="d-flex justify-content-end gap-2 mt-4">
+                                                <div className="placeholder col-2"></div>
+                                                <div className="placeholder col-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : todoLists.length > 0 ? (
+                            todoLists.map((todo) => (
+                                <div key={todo._id} className="col-md-6 mb-4">
+                                    <div className="card">
+                                        <div className="card-body">
+                                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                                <h3 className="card-title mb-0">
+                                                    <IconClipboardList className="icon me-2" />
+                                                    {todo.title}
+                                                </h3>
+                                                <span className="text-muted small">
+                                                    {getCompletion(todo)} {t('dashboard.stats.completion')}
+                                                </span>
+                                            </div>
+
+                                            <div className="d-flex justify-content-end gap-2">
+                                                <button
+                                                    onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
+                                                    className="btn btn-link"
+                                                >
+                                                    <IconPencil className="icon" /> {t('dashboard.actions.viewEdit')}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(todo._id)}
+                                                    className="btn btn-link text-danger"
+                                                >
+                                                    <IconTrash className="icon" /> {t('dashboard.actions.delete')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-12 text-center mt-4">
+                                <IconClipboardX size={48} className="text-muted mb-2" />
+                                <p className="text-muted">{t('dashboard.lists.empty')}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Shared Todo Lists */}
+                    <div className="mt-5">
+                        <h2 className="h2 mb-4">{t('dashboard.lists.shared.title')}</h2>
+                        <div className="row">
+                            {sharedTodoLists.length > 0 ? (
+                                sharedTodoLists.map((todo) => (
+                                    <div key={todo._id} className="col-md-6 mb-4">
+                                        <div className="card">
+                                            <div className="card-body">
+                                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                                    <h3 className="card-title mb-0">
+                                                        <IconClipboardList className="icon me-2" />
+                                                        {todo.title}
+                                                    </h3>
+                                                    <span className="text-muted small">
+                                                        {getCompletion(todo)} {t('dashboard.stats.completion')}
+                                                    </span>
+                                                </div>
+
+                                                <div className="d-flex justify-content-end">
+                                                    <button
+                                                        onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
+                                                        className="btn btn-link"
+                                                    >
+                                                        <IconPencil className="icon" /> {t('dashboard.actions.viewEdit')}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="col-12 text-center mt-4">
+                                    <IconClipboardX size={48} className="text-muted mb-2" />
+                                    <p className="text-muted">{t('dashboard.lists.shared.empty')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

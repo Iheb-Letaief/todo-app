@@ -248,197 +248,219 @@ export default function TodoDetailPage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <div className="mb-6 flex items-center gap-2">
-                <button
-                    onClick={() => router.push('/dashboard')}
-                    className="cursor-pointer text-sm text-gray-600 hover:underline flex items-center"
-                >
-                    <IconChevronLeft size={16} /> {t('todoDetail.back')}
-                </button>
-            </div>
-
-            <h1 className="text-2xl text-gray-950 font-bold mb-4 flex items-center gap-2">
-                <IconEdit size={24} />
-                {title}
-                {!canUserEdit && (
-                    <span className="text-sm text-gray-500 ml-2">(You can only view this list)</span>
-                )}
-            </h1>
-
-            {/* Add New Task */}
-            <div className="flex gap-2 mb-6">
-                <input
-                    type="text"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder={t('todoDetail.addTaskPlaceholder')}
-                    className="border text-gray-950 placeholder-gray-400 border-gray-300 px-4 py-2 rounded-md w-full"
-                />
-                <button
-                    onClick={handleAddTask}
-                    disabled={!canUserEdit}
-                    className={`cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-1 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                >
-                    <IconPlus size={18} /> {t('todoDetail.addTaskButton')}
-                </button>
-            </div>
-
-            {/* Tasks */}
-            {loading ? (
-                <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                </div>
-            ) : (
-                <>
-                    {incompleteTasks.length > 0 && (
-                        <div className="mb-6">
-                            <h2 className="font-semibold mb-2 text-gray-700">{t('todoDetail.tasks')}</h2>
-                            <ul className="space-y-2">
-                                {incompleteTasks.map((task, index) => (
-                                    <li
-                                        key={task._id || `incomplete-${index}`}
-                                        className="flex justify-between items-center border border-gray-200 rounded-md p-3 shadow-sm"
-                                    >
-                                        <span className="text-gray-950">{task.title}</span>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleToggleComplete(task._id, task.completed)}
-                                                className={`cursor-pointer text-green-600 hover:text-green-800 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                                                disabled={!canUserEdit}
-                                                title="Mark as completed"
-                                            >
-                                                <IconCheck size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteTask(task._id)}
-                                                className={`cursor-pointer text-red-600 hover:text-red-800 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                                                disabled={!canUserEdit}
-                                                title="Delete task"
-                                            >
-                                                <IconTrash size={18} />
-                                            </button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {completedTasks.length > 0 && (
-                        <div>
-                            <h2 className="font-semibold mb-2 text-gray-700">{t('todoDetail.completedTasks')}</h2>
-                            <ul className="space-y-2">
-                                {completedTasks.map((task, index) => (
-                                    <li
-                                        key={task._id || `completed-${index}`}
-                                        className="flex justify-between items-center border border-gray-200 rounded-md p-3 bg-gray-100 text-gray-500 line-through"
-                                    >
-                                        <span>{task.title}</span>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleToggleComplete(task._id, task.completed)}
-                                                className="cursor-pointer text-yellow-600 hover:text-yellow-800"
-                                                title="Mark as incomplete"
-                                            >
-                                                <IconX size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteTask(task._id)}
-                                                className={`cursor-pointer text-red-600 hover:text-red-800 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                                                disabled={!canUserEdit}
-                                                title="Delete task"
-                                            >
-                                                <IconTrash size={18} />
-                                            </button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {tasks.length === 0 && <p className="text-gray-600">{t('todoDetail.noTasks')}</p>}
-                </>
-            )}
-
-            {/* Share Section */}
-            <div className="mt-10">
-                <h2 className="font-semibold mb-2 text-gray-700">{t('todoDetail.share.title')}</h2>
-
-                {/* Share form */}
-                <div className="flex gap-2 mb-4">
-                    <input
-                        type="email"
-                        placeholder={t('todoDetail.share.emailPlaceholder')}
-                        value={shareEmail}
-                        onChange={(e) => setShareEmail(e.target.value)}
-                        className="border text-gray-950 placeholder-gray-400 border-gray-300 px-4 py-2 rounded-md w-full"
-                    />
-                    <select
-                        value={canEdit ? 'edit' : 'view'}
-                        onChange={(e) => setCanEdit(e.target.value === 'edit')}
-                        disabled={!canUserEdit}
-                        className={`border border-gray-300 rounded-md px-3 py-2 text-gray-700 ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                    >
-                        <option value="view">{t('todoDetail.share.permission.view')}</option>
-                        <option value="edit">{t('todoDetail.share.permission.edit')}</option>
-                    </select>
-                    <button
-                        onClick={handleShare}
-                        disabled={!canUserEdit}
-                        className={`cursor-pointer bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                    >
-                        {t('todoDetail.share.shareButton')}
-                    </button>
-                </div>
-
-                {/* Shared Users List */}
-                {loading ? (
-                    <div className="animate-pulse space-y-3">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        <div className="page-wrapper">
+            <div className="page-body">
+                <div className="container-xl">
+                    <div className="d-flex align-items-center gap-2 mb-4">
+                        <button
+                            onClick={() => router.push('/dashboard')}
+                            className="btn btn-link text-muted p-0"
+                        >
+                            <IconChevronLeft className="icon" /> {t('todoDetail.back')}
+                        </button>
                     </div>
-                ) : (
-                    sharedUsers.length > 0 ? (
-                        <ul className="space-y-2">
-                            {sharedUsers.map((user, index) => (
-                                <li
-                                    key={user.email || `shared-${index}`}
-                                    className="flex justify-between items-center border border-gray-200 p-3 rounded-md shadow-sm"
+
+                    <div className="card mb-4">
+                        <div className="card-header">
+                            <h2 className="card-title d-flex align-items-center gap-2 m-0">
+                                <IconEdit className="icon" />
+                                {title}
+                                {!canUserEdit && (
+                                    <span className="text-muted ms-2 small">{t('todoDetail.viewOnly')}</span>
+                                )}
+                            </h2>
+                        </div>
+                        <div className="card-body">
+                            {/* Add New Task */}
+                            <div className="input-group mb-4">
+                                <input
+                                    type="text"
+                                    value={newTaskTitle}
+                                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                                    placeholder={t('todoDetail.addTaskPlaceholder')}
+                                    className="form-control"
+                                />
+                                <button
+                                    onClick={handleAddTask}
+                                    disabled={!canUserEdit}
+                                    className="btn btn-primary"
                                 >
-                                    <div>
-                                        <p className="text-gray-900">{user.email}</p>
-                                        <p className="cursor-pointer text-sm text-gray-500">
-                                            Access: {user.canEdit ? t('todoDetail.share.permission.edit') : t('todoDetail.share.permission.view')}
-                                        </p>
+                                    <IconPlus className="icon" /> {t('todoDetail.addTaskButton')}
+                                </button>
+                            </div>
+
+                            {/* Tasks */}
+                            {loading ? (
+                                <div className="placeholder-glow">
+                                    {Array.from({ length: 3 }).map((_, i) => (
+                                        <div key={i} className="placeholder col-12 mb-3 rounded"></div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <>
+                                    {incompleteTasks.length > 0 && (
+                                        <div className="mb-4">
+                                            <h3 className="card-subtitle mb-3">{t('todoDetail.tasks')}</h3>
+                                            <div className="list-group">
+                                                {incompleteTasks.map((task, index) => (
+                                                    <div
+                                                        key={task._id || `incomplete-${index}`}
+                                                        className="list-group-item d-flex justify-content-between align-items-center"
+                                                    >
+                                                        <span>{task.title}</span>
+                                                        <div className="btn-list">
+                                                            <button
+                                                                onClick={() => handleToggleComplete(task._id, task.completed)}
+                                                                disabled={!canUserEdit}
+                                                                className="btn btn-icon btn-success"
+                                                                title={t('todoDetail.markComplete')}
+                                                            >
+                                                                <IconCheck className="icon" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteTask(task._id)}
+                                                                disabled={!canUserEdit}
+                                                                className="btn btn-icon btn-danger"
+                                                                title={t('todoDetail.deleteTask')}
+                                                            >
+                                                                <IconTrash className="icon" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {completedTasks.length > 0 && (
+                                        <div>
+                                            <h3 className="card-subtitle mb-3">{t('todoDetail.completedTasks')}</h3>
+                                            <div className="list-group">
+                                                {completedTasks.map((task, index) => (
+                                                    <div
+                                                        key={task._id || `completed-${index}`}
+                                                        className="list-group-item d-flex justify-content-between align-items-center text-muted text-decoration-line-through"
+                                                    >
+                                                        <span>{task.title}</span>
+                                                        <div className="btn-list">
+                                                            <button
+                                                                onClick={() => handleToggleComplete(task._id, task.completed)}
+                                                                className="btn btn-icon btn-warning"
+                                                                title={t('todoDetail.markIncomplete')}
+                                                            >
+                                                                <IconX className="icon" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteTask(task._id)}
+                                                                disabled={!canUserEdit}
+                                                                className="btn btn-icon btn-danger"
+                                                                title={t('todoDetail.deleteTask')}
+                                                            >
+                                                                <IconTrash className="icon" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {tasks.length === 0 && (
+                                        <div className="empty">
+                                            <p className="empty-title">{t('todoDetail.noTasks')}</p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Share Section */}
+                    <div className="card">
+                        <div className="card-header">
+                            <h3 className="card-title">{t('todoDetail.share.title')}</h3>
+                        </div>
+                        <div className="card-body">
+                            {/* Share form */}
+                            <div className="input-group space-x-3 mb-4">
+                                <input
+                                    type="email"
+                                    placeholder={t('todoDetail.share.emailPlaceholder')}
+                                    value={shareEmail}
+                                    onChange={(e) => setShareEmail(e.target.value)}
+                                    className="form-control"
+                                />
+                                <select
+                                    value={canEdit ? 'edit' : 'view'}
+                                    onChange={(e) => setCanEdit(e.target.value === 'edit')}
+                                    disabled={!canUserEdit}
+                                    className="form-select"
+                                >
+                                    <option value="view">{t('todoDetail.share.permission.view')}</option>
+                                    <option value="edit">{t('todoDetail.share.permission.edit')}</option>
+                                </select>
+                                <button
+                                    onClick={handleShare}
+                                    disabled={!canUserEdit}
+                                    className="btn btn-success"
+                                >
+                                    {t('todoDetail.share.shareButton')}
+                                </button>
+                            </div>
+
+                            {/* Shared Users List */}
+                            {loading ? (
+                                <div className="placeholder-glow">
+                                    {Array.from({ length: 3 }).map((_, i) => (
+                                        <div key={i} className="placeholder col-12 mb-3 rounded"></div>
+                                    ))}
+                                </div>
+                            ) : (
+                                sharedUsers.length > 0 ? (
+                                    <div className="list-group">
+                                        {sharedUsers.map((user, index) => (
+                                            <div
+                                                key={user.email || `shared-${index}`}
+                                                className="list-group-item"
+                                            >
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <div>{user.email}</div>
+                                                        <div className="text-muted small">
+                                                            {t('todoDetail.share.access')}: {user.canEdit ?
+                                                            t('todoDetail.share.permission.edit') :
+                                                            t('todoDetail.share.permission.view')}
+                                                        </div>
+                                                    </div>
+                                                    <div className="btn-list">
+                                                        <button
+                                                            onClick={() => handleTogglePermission(user.email, !user.canEdit)}
+                                                            disabled={!canUserEdit}
+                                                            className="btn btn-sm btn-primary"
+                                                        >
+                                                            {t('todoDetail.share.togglePermission')}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleUnshare(user.email)}
+                                                            disabled={!canUserEdit}
+                                                            className="btn btn-sm btn-danger"
+                                                        >
+                                                            {t('todoDetail.share.unshare')}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleTogglePermission(user.email, !user.canEdit)}
-                                            disabled={!canUserEdit}
-                                            className={`cursor-pointer text-blue-600 hover:text-blue-800 text-sm ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                                        >
-                                            {t('todoDetail.share.togglePermission')}
-                                        </button>
-                                        <button
-                                            onClick={() => handleUnshare(user.email)}
-                                            disabled={!canUserEdit}
-                                            className={`cursor-pointer text-red-600 hover:text-red-800 text-sm ${!canUserEdit && 'opacity-50 cursor-not-allowed'}`}
-                                        >
-                                            {t('todoDetail.share.unshare')}
-                                        </button>
+                                ) : (
+                                    <div className="empty">
+                                        <p className="empty-title">{t('todoDetail.share.notShared')}</p>
                                     </div>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-600">{t('todoDetail.share.notShared')}</p>
-                    )
-                )}
+                                )
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

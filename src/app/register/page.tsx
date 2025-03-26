@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import {useTranslation} from "react-i18next";
+import Link from "next/link";
 
 const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
@@ -51,7 +52,7 @@ export default function Signup() {
                 setMessage(t('auth.register.successMessage'));
                 setTimeout(() => router.push("/login"), 3000);
             } else {
-                setMessage(`❌ ${responseData.message || t('auth.register.errorMessage')}`);
+                setMessage(`${responseData.message || t('auth.register.errorMessage')}`);
             }
         } catch (error) {
             setMessage(t('auth.register.errorMessage'));
@@ -61,73 +62,100 @@ export default function Signup() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-            <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-center text-gray-900">Sign Up</h2>
-                <p className="text-center text-sm text-gray-600">{t('auth.register.subtitle')}</p>
+        <div className="page-wrapper">
+            <div className="page-body">
+                <div className="container-tight">
+                    <div className="row pt-32 align-items-center justify-content-center">
+                        <div className="card card-md">
+                            <div className="card-body">
+                                <h2 className="h2 text-center mb-4">{t('auth.register.title')}</h2>
+                                <p className="text-center text-muted mb-4">{t('auth.register.subtitle')}</p>
 
+                                {message && (
+                                    <div className="alert alert-info" role="alert">
+                                        {message}
+                                    </div>
+                                )}
 
-                {message && <p className="text-center text-sm text-gray-700">{message}</p>}
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    <div className="mb-3">
+                                        <label className="form-label">{t('auth.register.namePlaceholder')}</label>
+                                        <input
+                                            {...register("name")}
+                                            className="form-control"
+                                            placeholder={t('auth.register.namePlaceholder')}
+                                        />
+                                        {errors.name && (
+                                            <div className="invalid-feedback d-block">
+                                                {errors.name.message}
+                                            </div>
+                                        )}
+                                    </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* Name Input */}
-                    <div>
-                        <input
-                            {...register("name")}
-                            placeholder={t('auth.register.namePlaceholder')}
-                            className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                        <p className="text-sm text-red-500">{errors.name?.message}</p>
+                                    <div className="mb-3">
+                                        <label className="form-label">{t('auth.register.emailPlaceholder')}</label>
+                                        <input
+                                            {...register("email")}
+                                            type="email"
+                                            className="form-control"
+                                            placeholder={t('auth.register.emailPlaceholder')}
+                                        />
+                                        {errors.email && (
+                                            <div className="invalid-feedback d-block">
+                                                {errors.email.message}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label className="form-label">{t('auth.register.passwordPlaceholder')}</label>
+                                        <input
+                                            {...register("password")}
+                                            type="password"
+                                            className="form-control"
+                                            placeholder={t('auth.register.passwordPlaceholder')}
+                                        />
+                                        {errors.password && (
+                                            <div className="invalid-feedback d-block">
+                                                {errors.password.message}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label className="form-label">{t('auth.register.confirmPasswordPlaceholder')}</label>
+                                        <input
+                                            {...register("confirmPassword")}
+                                            type="password"
+                                            className="form-control"
+                                            placeholder={t('auth.register.confirmPasswordPlaceholder')}
+                                        />
+                                        {errors.confirmPassword && (
+                                            <div className="invalid-feedback d-block">
+                                                {errors.confirmPassword.message}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="form-footer">
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary w-100"
+                                            disabled={loading}
+                                        >
+                                            {loading ? t('auth.register.loading') : t('auth.register.submitButton')}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div className="text-center text-muted mt-3">
+                            <Link href="/login" className="text-primary">
+                                {t('auth.register.loginLink')}
+                            </Link>
+                        </div>
                     </div>
-
-                    {/* Email Input */}
-                    <div>
-                        <input
-                            {...register("email")}
-                            type="email"
-                            placeholder={t('auth.register.emailPlaceholder')}
-                            className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                        <p className="text-sm text-red-500">{errors.email?.message}</p>
-                    </div>
-
-                    {/* Password Input */}
-                    <div>
-                        <input
-                            {...register("password")}
-                            type="password"
-                            placeholder={t('auth.register.passwordPlaceholder')}
-                            className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                        <p className="text-sm text-red-500">{errors.password?.message}</p>
-                    </div>
-
-                    {/* Confirm Password Input */}
-                    <div>
-                        <input
-                            {...register("confirmPassword")}
-                            type="password"
-                            placeholder={t('auth.register.confirmPasswordPlaceholder')}
-                            className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                        <p className="text-sm text-red-500">{errors.confirmPassword?.message}</p>
-                    </div>
-
-                    {/* Submit Button */}
-                    <button type="submit"
-                            disabled={loading}
-                            className="w-full rounded-md bg-blue-500 p-3 text-white transition hover:bg-blue-600 disabled:bg-gray-400"
-                    >
-
-                        {loading ? t('auth.register.loading') : t('auth.register.submitButton')}
-                    </button>
-                </form>
-
-                {/* Links */}
-                <div className="text-center">
-                    <a href="/login" className="text-sm text-blue-500 transition hover:text-blue-700">
-                        {t('auth.register.loginLink')}
-                    </a>
                 </div>
             </div>
         </div>

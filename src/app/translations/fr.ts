@@ -76,7 +76,7 @@ export const fr = {
             title: 'Gérez vos tâches sans effort',
             subtitle: 'Une plateforme de gestion des tâches puissante et conviviale avec authentification, accès basé sur les rôles, fonctionnalité de partage, support multilingue, et plus encore.',
             getStarted: 'Commencer - Inscription',
-            login: 'Déjà un compte ? Connexion'
+            login: 'Vous avez déjà un compte ? Connexion'
         },
         features: {
             taskManagement: {

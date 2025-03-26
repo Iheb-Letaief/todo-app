@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import {useTranslation} from "react-i18next";
+import Link from "next/link";
 
 const ForgotPassword = () => {
     const { t } = useTranslation();
@@ -28,7 +29,7 @@ const ForgotPassword = () => {
             if (response.ok) {
                 setMessage(t('auth.forgotPassword.successMessage'));
             } else {
-                setMessage(`❌ ${data.message || t('auth.forgotPassword.errorMessage')}`);
+                setMessage(`${data.message || t('auth.forgotPassword.errorMessage')}`);
             }
         } catch (error) {
             setMessage(t('auth.forgotPassword.errorMessage'));
@@ -38,46 +39,53 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-            <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-center text-gray-950">{t('auth.forgotPassword.title')}</h2>
+        <div className="page-wrapper">
+            <div className="page-body">
+                <div className="container-tight">
+                    <div className="row pt-32 align-items-center justify-content-center">
+                        <div className="card card-md">
+                            <div className="card-body">
+                                <h2 className="h2 text-center mb-4">{t('auth.forgotPassword.title')}</h2>
 
-                <p className="text-center text-sm text-gray-600">{t('auth.forgotPassword.subtitle')}</p>
+                                <p className="text-muted text-center mb-4">{t('auth.forgotPassword.subtitle')}</p>
 
+                                {message && (
+                                    <div className="alert alert-info" role="alert">
+                                        {message}
+                                    </div>
+                                )}
 
-                {message && <p className="text-center text-sm text-gray-700">{message}</p>}
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-3">
+                                        <input
+                                            type="email"
+                                            className="form-control"
+                                            placeholder={t('auth.forgotPassword.emailPlaceholder')}
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                        />
+                                    </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Email Input */}
-                    <div>
-                        <input
-                            type="email"
-                            placeholder={t('auth.forgotPassword.emailPlaceholder')}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full placeholder-gray-400 text-gray-950 rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
+                                    <div className="form-footer">
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary w-100"
+                                            disabled={loading}
+                                        >
+                                            {loading ? t('auth.forgotPassword.loading') : t('auth.forgotPassword.submitButton')}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div className="text-center text-muted mt-3">
+                            <Link href="/login" className="text-primary">
+                                {t('auth.forgotPassword.loginLink')}
+                            </Link>
+                        </div>
                     </div>
-
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full cursor-pointer rounded-md bg-blue-500 p-3 text-white transition hover:bg-blue-600 disabled:bg-gray-400"
-                    >
-                        {loading ? t('auth.forgotPassword.loading') : t('auth.forgotPassword.submitButton')}
-                    </button>
-                </form>
-
-                {/* Back to Login */}
-                <div className="text-center">
-                    <a
-                        href="/login"
-                        className="text-sm text-blue-500 transition hover:text-blue-700"
-                    >
-                        {t('auth.forgotPassword.loginLink')}
-                    </a>
                 </div>
             </div>
         </div>

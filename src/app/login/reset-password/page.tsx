@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {useTranslation} from "react-i18next";
+import Link from "next/link";
 
 const ResetPassword = () => {
     const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const token = searchParams.get("token"); // Get the token from URL
+    const token = searchParams.get("token");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -44,7 +45,7 @@ const ResetPassword = () => {
                 setMessage(t('auth.resetPassword.successMessage'));
                 setTimeout(() => router.push("/login"), 3000);
             } else {
-                setMessage(`❌ ${data.message || t('auth.resetPassword.errorMessage')}`);
+                setMessage(`${data.message || t('auth.resetPassword.errorMessage')}`);
             }
         } catch (error) {
             setMessage(t('auth.resetPassword.errorMessage'));
@@ -53,59 +54,64 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-            <div className="w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-center text-gray-900">
-                    {t('auth.resetPassword.title')}
-                </h2>
+        <div className="page-wrapper">
+            <div className="page-body">
+                <div className="container-tight">
+                    <div className="row pt-32 align-items-center justify-content-center">
+                        <div className="card card-md">
+                            <div className="card-body">
+                                <h2 className="h2 text-center mb-4">
+                                    {t('auth.resetPassword.title')}
+                                </h2>
 
-                {message && (
-                    <p className="text-center text-sm text-gray-700">{message}</p>
-                )}
+                                {message && (
+                                    <div className="alert alert-info" role="alert">
+                                        {message}
+                                    </div>
+                                )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* New Password Input */}
-                    <div>
-                        <input
-                            type="password"
-                            placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full rounded-md border text-gray-950 placeholder-gray-400 border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-3">
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="form-footer">
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary w-100"
+                                            disabled={loading}
+                                        >
+                                            {loading ? t('auth.resetPassword.loading') : t('auth.resetPassword.submitButton')}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div className="text-center text-muted mt-3">
+                            <Link href="/login" className="text-primary">
+                                {t('auth.resetPassword.loginLink')}
+                            </Link>
+                        </div>
                     </div>
-
-                    {/* Confirm Password Input */}
-                    <div>
-                        <input
-                            type="password"
-                            placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            className="w-full rounded-md border text-gray-950 placeholder-gray-400 border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full rounded-md cursor-pointer bg-blue-500 p-3 text-white transition hover:bg-blue-600 disabled:bg-gray-400"
-                    >
-                        {loading ? t('auth.resetPassword.loading') : t('auth.resetPassword.submitButton')}
-                    </button>
-                </form>
-
-                {/* Back to Login */}
-                <div className="text-center">
-                    <a
-                        href="/login"
-                        className="text-sm text-blue-500 transition hover:text-blue-700"
-                    >
-                        {t('auth.resetPassword.loginLink')}
-                    </a>
                 </div>
             </div>
         </div>
