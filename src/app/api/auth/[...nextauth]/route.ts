@@ -25,9 +25,6 @@ const handler = NextAuth({
                         }
                     );
 
-                    console.log("API Response:", response.data); // Log the response
-
-
                     if (response.data && response.data.token) {
                         // Return user data that will be stored in the JWT
                         return {
@@ -35,7 +32,7 @@ const handler = NextAuth({
                             name: response.data.user.name,
                             email: response.data.user.email,
                             role: response.data.user.role,
-                            token: response.data.token, // We'll store the token to use for API calls
+                            token: response.data.token,
                         };
                     }
 
@@ -47,6 +44,7 @@ const handler = NextAuth({
             },
         }),
     ],
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user }) {
             // Initial sign in
@@ -74,7 +72,11 @@ const handler = NextAuth({
     },
     session: {
         strategy: "jwt",
+        maxAge: 5 * 24 * 60 * 60, // 5 days
+        updateAge: 24 * 60 * 60,
     },
+
+
 });
 
 export { handler as GET, handler as POST };

@@ -146,7 +146,7 @@ export default async function authRoutes(fastify, options) {
 export async function authenticate(request, reply) {
     try {
         const authHeader = request.headers.authorization;
-        if (!authHeader) throw new Error("No token provided");
+        if (!authHeader ||!authHeader.startsWith('Bearer ')) throw new Error("No token provided");
 
         const token = authHeader.split(" ")[1];
         request.user = await request.jwtVerify();

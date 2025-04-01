@@ -21,6 +21,8 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
     const { data: session } = useSession();
     const token = session?.token;
@@ -89,6 +91,42 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleDeleteClick = (user: User) => {
+        setUserToDelete(user);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!userToDelete) return;
+
+        try {
+            setDeletingUserId(userToDelete._id);
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${userToDelete._id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!res.ok) {
+                alert(t('admin.deleteError'));
+                return;
+            }
+
+            setUsers((prev) => prev.filter((user) => user._id !== userToDelete._id));
+        } catch (err) {
+            alert(t('admin.deleteError'));
+            console.error(err);
+        } finally {
+            setDeletingUserId(null);
+            setShowDeleteModal(false);
+            setUserToDelete(null);
+        }
+    };
+
     return (
         <div className="page-wrapper">
             <div className="page-body">
@@ -134,14 +172,14 @@ export default function AdminDashboard() {
                                                 <td className="text-end">
                                                     {user.role !== 'admin' ? (
                                                         <button
-                                                            onClick={() => handleDeleteUser(user._id)}
+                                                            onClick={() => handleDeleteClick(user)}
                                                             disabled={deletingUserId === user._id}
                                                             className="btn btn-sm btn-danger"
                                                         >
                                                             <IconTrash className="icon" />
-                                                            {deletingUserId === user._id ?
-                                                                t('auth.admin.deleting') :
-                                                                t('auth.admin.delete')}
+                                                            {deletingUserId === user._id
+                                                                ? t('auth.admin.deleting')
+                                                                : t('auth.admin.delete')}
                                                         </button>
                                                     ) : (
                                                         <span className="text-muted">
@@ -159,6 +197,69 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="modal show d-block" tabIndex={-1} role="dialog">
+                    <div className="modal-dialog modal-sm" role="document">
+                        <div className="modal-content">
+                            <button
+                                type="button"
+                                className="btn-close"
+                                aria-label="Close"
+                                onClick={() => setShowDeleteModal(false)}
+                            ></button>
+                            <div className="modal-status bg-danger"></div>
+                            <div className="modal-body text-center py-4">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="icon mb-2 text-danger icon-lg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth="2"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M12 9v2m0 4v.01" />
+                                    <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                                </svg>
+                                <h3>{t('auth.admin.deleteConfirm')}</h3>
+
+                            </div>
+                            <div className="modal-footer">
+                                <div className="w-100">
+                                    <div className="row">
+                                        <div className="col">
+                                            <button
+                                                className="btn w-100"
+                                                onClick={() => setShowDeleteModal(false)}
+                                            >
+                                                {t('auth.admin.cancel')}
+                                            </button>
+                                        </div>
+                                        <div className="col">
+                                            <button
+                                                className="btn btn-danger w-100"
+                                                onClick={handleConfirmDelete}
+                                                disabled={!!deletingUserId}
+                                            >
+                                                {deletingUserId ? (
+                                                    <IconLoader className="animate-spin" />
+                                                ) : (
+                                                    t('auth.admin.delete')
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

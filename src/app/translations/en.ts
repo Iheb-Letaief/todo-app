@@ -13,6 +13,7 @@ export const en = {
             fetchError: 'Failed to fetch users',
             deleteError: 'Failed to delete user',
             deleteConfirm: 'Are you sure you want to delete this user?',
+            cancel: 'Cancel',
         },
 
         login: {
@@ -102,6 +103,7 @@ export const en = {
         title: 'My Todo Lists',
         welcome: 'Welcome',
         create: {
+            title: 'Create new Todo List',
             placeholder: 'New List Title',
             add: 'Add'
         },
@@ -123,15 +125,21 @@ export const en = {
 
     todoDetail: {
         back: 'Back to Dashboard',
+        addNewTask: 'Add a new task',
         addTaskPlaceholder: 'New task title',
         addTaskButton: 'Add',
         tasks: 'Tasks',
         completedTasks: 'Completed Tasks',
         noTasks: 'No tasks added yet.',
+        progress: 'Progress',
+        markComplete: 'Mark Complete',
+        markIncomplete: 'Mark Incomplete',
+        deleteTask: 'Delete Task',
         share: {
             title: 'Share This Todo List',
             emailPlaceholder: "User's email",
             permission: {
+                title: 'Permission',
                 view: 'Can View',
                 edit: 'Can Edit'
             },

@@ -16,7 +16,7 @@ const DarkModeToggle: React.FC<DarkModeToggleProps> = ({ darkMode, setDarkMode }
 
     return (
         <button
-            className="btn btn-icon"
+            className="btn btn-icon p-2"
             onClick={() => setDarkMode(!darkMode)}
             title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
         >

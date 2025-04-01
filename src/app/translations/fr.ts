@@ -13,6 +13,7 @@ export const fr = {
             fetchError: 'Échec du chargement des utilisateurs',
             deleteError: "Échec de la suppression de l'utilisateur",
             deleteConfirm: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?',
+            cancel: 'Annuler',
         },
 
         login: {
@@ -102,6 +103,7 @@ export const fr = {
         title: 'Mes Listes',
         welcome: 'Bienvenue',
         create: {
+            title: 'Créer une nouvelle liste Todo',
             placeholder: 'Titre de la nouvelle liste',
             add: 'Ajouter'
         },
@@ -123,15 +125,21 @@ export const fr = {
 
     todoDetail: {
         back: 'Retour au tableau de bord',
+        addNewTask: 'Ajouter une nouvelle tâche',
         addTaskPlaceholder: 'Titre de la nouvelle tâche',
         addTaskButton: 'Ajouter',
         tasks: 'Tâches',
         completedTasks: 'Tâches terminées',
         noTasks: 'Aucune tâche ajoutée pour le moment.',
+        progress: 'Progrès',
+        markComplete: 'Marquer comme terminé',
+        markIncomplete: 'Marquer comme non terminé',
+        deleteTask: 'Supprimer la tâche',
         share: {
             title: 'Partager cette liste de tâches',
             emailPlaceholder: "Email de l'utilisateur",
             permission: {
+                title: 'Permission',
                 view: 'Peut voir',
                 edit: 'Peut modifier'
             },

@@ -51,6 +51,25 @@ export default function TodoDetailPage() {
     });
     const token = session?.token;
 
+    // Add this useEffect hook near your other hooks
+    useEffect(() => {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+        tooltipTriggerList.forEach((tooltipTriggerEl: Element) => {
+            new (window as any).bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Cleanup tooltips when component unmounts
+        return () => {
+            tooltipTriggerList.forEach((tooltipTriggerEl: Element) => {
+                const tooltip = (window as any).bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+                if (tooltip) tooltip.dispose();
+            });
+        };
+    }, [tasks, loading]); // Re-run when tasks or loading state changes
+
     useEffect(() => {
         const fetchTodo = async () => {
             if (status === 'loading' || !session.token) {
@@ -247,6 +266,12 @@ export default function TodoDetailPage() {
         }
     };
 
+    const getCompletion = () => {
+        if (!tasks.length) return 0;
+        const completedTasksCount = tasks.filter((task) => task.completed).length;
+        return Math.round((completedTasksCount / tasks.length) * 100);
+    };
+
     return (
         <div className="page-wrapper">
             <div className="page-body">
@@ -270,23 +295,43 @@ export default function TodoDetailPage() {
                                 )}
                             </h2>
                         </div>
+                        <div className="p-3">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                <div className="text-muted">{t('todoDetail.progress')}</div>
+                            </div>
+                            <div className="progress" style={{ height: "20px" }}>
+                                <div
+                                    className={`progress-bar ${getCompletion() === 100 ? 'bg-success' : 'bg-primary'}`}
+                                    style={{ width: `${getCompletion()}%` }}
+                                    role="progressbar"
+                                    aria-valuenow={getCompletion()}
+                                    aria-valuemin={0}
+                                    aria-valuemax={100}
+                                >
+                                    <span >{getCompletion()}%</span>
+                                </div>
+                            </div>
+                        </div>
                         <div className="card-body">
                             {/* Add New Task */}
-                            <div className="input-group mb-4">
-                                <input
-                                    type="text"
-                                    value={newTaskTitle}
-                                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                                    placeholder={t('todoDetail.addTaskPlaceholder')}
-                                    className="form-control"
-                                />
-                                <button
-                                    onClick={handleAddTask}
-                                    disabled={!canUserEdit}
-                                    className="btn btn-primary"
-                                >
-                                    <IconPlus className="icon" /> {t('todoDetail.addTaskButton')}
-                                </button>
+                            <div className="mb-4">
+                                <label className="form-label">{t('todoDetail.addNewTask')}</label>
+                                <div className="input-group">
+                                    <input
+                                        type="text"
+                                        value={newTaskTitle}
+                                        onChange={(e) => setNewTaskTitle(e.target.value)}
+                                        placeholder={t('todoDetail.addTaskPlaceholder')}
+                                        className="form-control"
+                                    />
+                                    <button
+                                        onClick={handleAddTask}
+                                        disabled={!canUserEdit}
+                                        className="btn btn-primary"
+                                    >
+                                        <IconPlus className="icon" /> {t('todoDetail.addTaskButton')}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Tasks */}
@@ -310,17 +355,23 @@ export default function TodoDetailPage() {
                                                         <span>{task.title}</span>
                                                         <div className="btn-list">
                                                             <button
+                                                                type="button"
                                                                 onClick={() => handleToggleComplete(task._id, task.completed)}
                                                                 disabled={!canUserEdit}
                                                                 className="btn btn-icon btn-success"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
                                                                 title={t('todoDetail.markComplete')}
                                                             >
                                                                 <IconCheck className="icon" />
                                                             </button>
                                                             <button
+                                                                type="button"
                                                                 onClick={() => handleDeleteTask(task._id)}
                                                                 disabled={!canUserEdit}
                                                                 className="btn btn-icon btn-danger"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
                                                                 title={t('todoDetail.deleteTask')}
                                                             >
                                                                 <IconTrash className="icon" />
@@ -345,7 +396,10 @@ export default function TodoDetailPage() {
                                                         <div className="btn-list">
                                                             <button
                                                                 onClick={() => handleToggleComplete(task._id, task.completed)}
+                                                                disabled={!canUserEdit}
                                                                 className="btn btn-icon btn-warning"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
                                                                 title={t('todoDetail.markIncomplete')}
                                                             >
                                                                 <IconX className="icon" />
@@ -354,6 +408,8 @@ export default function TodoDetailPage() {
                                                                 onClick={() => handleDeleteTask(task._id)}
                                                                 disabled={!canUserEdit}
                                                                 className="btn btn-icon btn-danger"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
                                                                 title={t('todoDetail.deleteTask')}
                                                             >
                                                                 <IconTrash className="icon" />
@@ -427,7 +483,7 @@ export default function TodoDetailPage() {
                                                     <div>
                                                         <div>{user.email}</div>
                                                         <div className="text-muted small">
-                                                            {t('todoDetail.share.access')}: {user.canEdit ?
+                                                            {t('todoDetail.share.permission.title')}: {user.canEdit ?
                                                             t('todoDetail.share.permission.edit') :
                                                             t('todoDetail.share.permission.view')}
                                                         </div>

@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {I18nextProvider} from "react-i18next";
 import i18n from "i18next";
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import '@tabler/core/dist/css/tabler.min.css';
 import {Providers} from "@/app/providers";
 import DarkModeToggle from "@/components/DarkModeToggle";
@@ -53,6 +54,8 @@ export default function RootLayout({
 
   return (
       <html lang="en" data-bs-theme={darkMode ? 'dark' : 'light'}>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler-flags.min.css" />
+
       <head>
         <meta charSet="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>

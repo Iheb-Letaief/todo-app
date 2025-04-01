@@ -23,7 +23,10 @@ fastify.register(cors, {
     allowedHeaders: "*",
 });
 
-fastify.register(fastifyJwt, { secret: process.env.JWT_SECRET });
+fastify.register(fastifyJwt, {
+    secret: process.env.JWT_SECRET,
+    sign: { expiresIn: "5d" }
+});
 
 fastify.decorate("authenticate", authenticate)
 

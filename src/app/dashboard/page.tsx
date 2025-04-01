@@ -164,7 +164,7 @@ export default function DashboardPage() {
                             <h1 className="h1 m-0">{t('dashboard.title')}</h1>
                         </div>
                         {user &&
-                            <div className="col text-end mr-10">
+                            <div className="col">
                                 <span className="text-secondary">{t('dashboard.welcome')}, {user.name}</span>
                             </div>
                         }
@@ -172,6 +172,9 @@ export default function DashboardPage() {
 
                     {/* Create New Todo */}
                     <div className="card mb-4">
+                        <div className="card-header">
+                            <h3 className="card-title">{t('dashboard.create.title')}</h3>
+                        </div>
                         <div className="card-body">
                             <div className="input-group">
                                 <input
