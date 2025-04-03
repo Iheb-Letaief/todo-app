@@ -135,6 +135,7 @@ export const fr = {
         markComplete: 'Marquer comme terminé',
         markIncomplete: 'Marquer comme non terminé',
         deleteTask: 'Supprimer la tâche',
+        viewOnly: '(Vous ne pouvez pas modifier cette liste.)',
         share: {
             title: 'Partager cette liste de tâches',
             emailPlaceholder: "Email de l'utilisateur",

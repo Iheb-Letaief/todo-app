@@ -32,7 +32,7 @@ const handler = NextAuth({
                             name: response.data.user.name,
                             email: response.data.user.email,
                             role: response.data.user.role,
-                            token: response.data.token,
+                            accessToken: response.data.token,
                         };
                     }
 
@@ -44,14 +44,14 @@ const handler = NextAuth({
             },
         }),
     ],
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.JWT_SECRET,
     callbacks: {
         async jwt({ token, user }) {
             // Initial sign in
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
-                token.token = user.token;
+                token.token = user.accessToken;
             }
             return token;
         },

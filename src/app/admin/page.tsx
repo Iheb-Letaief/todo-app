@@ -6,6 +6,7 @@ import { IconTrash, IconUserShield, IconLoader } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import LogoutButton from "@/components/LogoutButton";
 import {useSession} from "next-auth/react";
+import axios from "axios";
 
 type User = {
     _id: string;
@@ -36,19 +37,13 @@ export default function AdminDashboard() {
 
         const fetchUsers = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users`, {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                if (!res.ok) {
-                    setError(t('admin.fetchError'));
-                    return;
-                }
-
-                const data = await res.json();
-                setUsers(data.users || []);
+                setUsers(res.data.users || []);
             } catch (err) {
                 setError(t('admin.fetchError'));
                 console.error(err);
@@ -70,17 +65,11 @@ export default function AdminDashboard() {
         setDeletingUserId(userId);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${userId}`, {
-                method: 'DELETE',
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
-            if (!res.ok) {
-                alert(t('admin.deleteError'));
-                return;
-            }
 
             setUsers((prev) => prev.filter((user) => user._id !== userId));
         } catch (err) {
@@ -101,20 +90,14 @@ export default function AdminDashboard() {
 
         try {
             setDeletingUserId(userToDelete._id);
-            const res = await fetch(
+            await axios.delete(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${userToDelete._id}`,
                 {
-                    method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${token}`,
-                    },
+                    }
                 }
             );
-
-            if (!res.ok) {
-                alert(t('admin.deleteError'));
-                return;
-            }
 
             setUsers((prev) => prev.filter((user) => user._id !== userToDelete._id));
         } catch (err) {

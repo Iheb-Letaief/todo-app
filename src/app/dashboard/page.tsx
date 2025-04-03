@@ -15,6 +15,7 @@ import {
 } from '@tabler/icons-react';
 import { useSession } from "next-auth/react";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import axios from "axios";
 
 type Task = {
     title: string;
@@ -68,13 +69,13 @@ export default function DashboardPage() {
 
             try {
                 const [todosRes, userRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos`, {
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/todos`, {
                         headers: {
                             Authorization: `Bearer ${session.token}`,
                             'Content-Type': 'application/json',
                         },
                     }),
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user`, {
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user`, {
                         headers: {
                             Authorization: `Bearer ${session.token}`,
                             'Content-Type': 'application/json',
@@ -82,12 +83,9 @@ export default function DashboardPage() {
                     }),
                 ]);
 
-                const todosData = await todosRes.json();
-                const userData = await userRes.json();
-
-                setTodoLists(todosData.owned || []);
-                setSharedTodoLists(todosData.shared || []);
-                setUser(userData);
+                setTodoLists(todosRes.data.owned || []);
+                setSharedTodoLists(todosRes.data.shared || []);
+                setUser(userRes.data);
             } catch (error) {
                 console.error('Failed to fetch data:', error);
             } finally {
@@ -103,21 +101,19 @@ export default function DashboardPage() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${session.token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ title: newTitle }),
-            });
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos`,
+                { title: newTitle },
+                {
+                    headers: {
+                        Authorization: `Bearer ${session.token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
-            const data = await res.json();
-
-            if (res.ok) {
-                setTodoLists((prev) => [...prev, data]);
-                setNewTitle('');
-            }
+            setTodoLists((prev) => [...prev, res.data]);
+            setNewTitle('');
         } catch (error) {
             console.error('Error adding todo:', error);
         } finally {
@@ -129,16 +125,13 @@ export default function DashboardPage() {
         if (!session?.token) return;
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
-                method: 'DELETE',
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
                 headers: {
                     Authorization: `Bearer ${session.token}`,
                 },
             });
 
-            if (res.ok) {
-                setTodoLists((prev) => prev.filter((todo) => todo._id !== id));
-            }
+            setTodoLists((prev) => prev.filter((todo) => todo._id !== id));
         } catch (error) {
             console.error('Error deleting todo:', error);
         }

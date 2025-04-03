@@ -135,6 +135,7 @@ export const en = {
         markComplete: 'Mark Complete',
         markIncomplete: 'Mark Incomplete',
         deleteTask: 'Delete Task',
+        viewOnly: '(You cannot edit this list.)',
         share: {
             title: 'Share This Todo List',
             emailPlaceholder: "User's email",

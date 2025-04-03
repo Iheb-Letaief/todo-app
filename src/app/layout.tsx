@@ -7,6 +7,7 @@ import {I18nextProvider} from "react-i18next";
 import i18n from "i18next";
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import '@tabler/core/dist/css/tabler.min.css';
+import '@tabler/core/dist/css/tabler-flags.min.css';
 import {Providers} from "@/app/providers";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import TranslationToggle from "@/components/ToggleTranslationButton";
@@ -47,18 +48,18 @@ export default function RootLayout({
   });
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
       require('@tabler/core/dist/js/tabler.min.js');
-    }
+      require('@tabler/core/dist/css/tabler-flags.min.css');
   }, []);
 
   return (
       <html lang="en" data-bs-theme={darkMode ? 'dark' : 'light'}>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler-flags.min.css" />
 
       <head>
         <meta charSet="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler-flags.min.css" />
+
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <div className="absolute top-4 right-4 z-50">

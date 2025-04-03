@@ -47,26 +47,20 @@ export default async function authRoutes(fastify, options) {
     fastify.post("/login", async (req, reply) => {
         try {
             const { email, password } = req.body;
-
-            // Check if user exists
             const user = await User.findOne({ email });
-            if (!user) {
+            if (!user || !(await bcrypt.compare(password, user.password))) {
                 return reply.status(400).send({ message: "Invalid credentials" });
             }
 
-            // Compare passwords
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return reply.status(400).send({ message: "Invalid credentials" });
-            }
-
-            // Generate JWT token
             const token = fastify.jwt.sign(
                 { id: user._id, role: user.role },
                 { expiresIn: "5d" }
             );
 
-            return reply.send({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+            return reply.send({
+                user: { id: user._id, name: user.name, email: user.email, role: user.role },
+                token, // Access token for API calls
+            });
         } catch (error) {
             console.error(error);
             return reply.status(500).send({ message: "Server error" });

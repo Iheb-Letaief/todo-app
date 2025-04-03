@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import {useTranslation} from "react-i18next";
 import Link from "next/link";
+import axios from "axios";
 
 const ForgotPassword = () => {
     const { t } = useTranslation();
@@ -16,26 +17,24 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(
+            await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`,
+                { email },
                 {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email }),
+                    headers: { "Content-Type": "application/json" }
                 }
             );
 
-            const data = await response.json();
-            if (response.ok) {
-                setMessage(t('auth.forgotPassword.successMessage'));
-            } else {
-                setMessage(`${data.message || t('auth.forgotPassword.errorMessage')}`);
-            }
+            setMessage(t('auth.forgotPassword.successMessage'));
         } catch (error) {
-            setMessage(t('auth.forgotPassword.errorMessage'));
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                setMessage(error.response.data.message);
+            } else {
+                setMessage(t('auth.forgotPassword.errorMessage'));
+            }
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (

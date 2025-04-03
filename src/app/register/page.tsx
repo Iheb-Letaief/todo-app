@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import {useTranslation} from "react-i18next";
 import Link from "next/link";
+import axios from "axios";
 
 const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
@@ -38,22 +39,18 @@ export default function Signup() {
         setMessage("");
 
         try {
-            const response = await fetch(
+            const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
                 {
-                    method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
                 }
             );
 
-            const responseData = await response.json();
-            if (response.ok) {
-                setMessage(t('auth.register.successMessage'));
-                setTimeout(() => router.push("/login"), 3000);
-            } else {
-                setMessage(`${responseData.message || t('auth.register.errorMessage')}`);
-            }
+            setMessage(t('auth.register.successMessage'));
+            setTimeout(() => router.push("/login"), 3000);
+
+
         } catch (error) {
             setMessage(t('auth.register.errorMessage'));
         }

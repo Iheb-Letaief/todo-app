@@ -12,6 +12,7 @@ import {
     IconEdit,
 } from '@tabler/icons-react';
 import {useSession} from "next-auth/react";
+import axios from "axios";
 
 type Task = {
     _id: string;
@@ -51,7 +52,6 @@ export default function TodoDetailPage() {
     });
     const token = session?.token;
 
-    // Add this useEffect hook near your other hooks
     useEffect(() => {
         // Initialize tooltips
         const tooltipTriggerList = [].slice.call(
@@ -68,7 +68,7 @@ export default function TodoDetailPage() {
                 if (tooltip) tooltip.dispose();
             });
         };
-    }, [tasks, loading]); // Re-run when tasks or loading state changes
+    }, [tasks, loading]);
 
     useEffect(() => {
         const fetchTodo = async () => {
@@ -82,26 +82,26 @@ export default function TodoDetailPage() {
             }
 
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const { data } = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
 
-                if (!res.ok) {
-                    router.push('/dashboard');
-                    return;
-                }
-
-                const data = await res.json();
                 setTitle(data.title);
                 setTasks(data.tasks || []);
 
                 if (data.userId.toString() === userId) {
                     setCanUserEdit(true);
                 } else {
-                    setCanUserEdit(data.sharedWith.some((user: any) => user.userId === userId && user.canEdit));
+                    setCanUserEdit(data.sharedWith.some(
+                        (user: any) => user.userId === userId && user.canEdit
+                    ));
                 }
             } catch (err) {
                 console.error('Failed to fetch todo list:', err);
+                router.push('/dashboard');
             } finally {
                 setLoading(false);
             }
@@ -116,48 +116,50 @@ export default function TodoDetailPage() {
         if (!newTaskTitle.trim()) return;
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ title: newTaskTitle }),
-            });
+            const { data } = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks`,
+                { title: newTaskTitle },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
 
-            const data = await res.json();
-            if (res.ok) {
-                const newTask = data.tasks[data.tasks.length - 1];
-                setTasks((prev) => [...prev, newTask]);
-                setNewTaskTitle('');
-            } else {
-                console.error('Failed to add task:', data);
-            }
+            const newTask = data.tasks[data.tasks.length - 1];
+            setTasks((prev) => [...prev, newTask]);
+            setNewTaskTitle('');
         } catch (err) {
             console.error('Error adding task:', err);
         }
     };
 
     const handleToggleComplete = async (taskId: string, currentStatus: boolean) => {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ completed: !currentStatus }),
-        });
+        try {
+            await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`,
+                { completed: !currentStatus },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
-        setTasks((prev) =>
-            prev.map((task) =>
-                task._id === taskId ? { ...task, completed: !currentStatus } : task
-            )
-        );
+            setTasks((prev) =>
+                prev.map((task) =>
+                    task._id === taskId ? { ...task, completed: !currentStatus } : task
+                )
+            );
+        } catch (error) {
+            console.error('Error toggling task status:', error);
+        }
     };
 
     const handleDeleteTask = async (taskId: string) => {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`, {
-            method: 'DELETE',
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -174,18 +176,17 @@ export default function TodoDetailPage() {
                 if(status === 'loading' || !session.token) {
                     return;
                 }
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    const mapped = data.sharedWith.map((u: any) => ({
-                        email: u.email,
-                        canEdit: u.canEdit,
-                    }));
-                    setSharedUsers(mapped);
-                }
+                const mapped = res.data.sharedWith.map((u: any) => ({
+                    email: u.email,
+                    canEdit: u.canEdit,
+                }));
+                setSharedUsers(mapped);
+
+
             } catch (err) {
                 console.error('Failed to fetch shared users:', err);
             } finally {
@@ -202,8 +203,7 @@ export default function TodoDetailPage() {
         if (!shareEmail.trim()) return;
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`, {
-                method: 'POST',
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -211,14 +211,10 @@ export default function TodoDetailPage() {
                 body: JSON.stringify({ email: shareEmail, canEdit }),
             });
 
-            const data = await res.json();
-            if (res.ok) {
-                setSharedUsers((prev) => [...prev, { email: shareEmail, canEdit }]);
-                setShareEmail('');
-                setCanEdit(false);
-            } else {
-                console.error('Failed to share:', data.error);
-            }
+            setSharedUsers((prev) => [...prev, { email: shareEmail, canEdit }]);
+            setShareEmail('');
+            setCanEdit(false);
+
         } catch (err) {
             console.error('Error sharing:', err);
         }
@@ -226,8 +222,7 @@ export default function TodoDetailPage() {
 
     const handleTogglePermission = async (email: string, newPermission: boolean) => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`, {
-                method: 'PUT',
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -235,13 +230,13 @@ export default function TodoDetailPage() {
                 body: JSON.stringify({ email, canEdit: newPermission }),
             });
 
-            if (res.ok) {
-                setSharedUsers((prev) =>
-                    prev.map((user) =>
-                        user.email === email ? { ...user, canEdit: newPermission } : user
-                    )
-                );
-            }
+            setSharedUsers((prev) =>
+                prev.map((user) =>
+                    user.email === email ? { ...user, canEdit: newPermission } : user
+                )
+            );
+
+
         } catch (err) {
             console.error('Failed to update permission:', err);
         }
@@ -249,18 +244,16 @@ export default function TodoDetailPage() {
 
     const handleUnshare = async (email: string) => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/unshare`, {
-                method: 'DELETE',
+            const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/unshare`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email }),
+                data: { email }
             });
 
-            if (res.ok) {
-                setSharedUsers((prev) => prev.filter((user) => user.email !== email));
-            }
+            setSharedUsers((prev) => prev.filter((user) => user.email !== email));
+
         } catch (err) {
             console.error('Failed to unshare:', err);
         }
@@ -275,7 +268,7 @@ export default function TodoDetailPage() {
     return (
         <div className="page-wrapper">
             <div className="page-body">
-                <div className="container-xl">
+                <div className="container-xl mt-4">
                     <div className="d-flex align-items-center gap-2 mb-4">
                         <button
                             onClick={() => router.push('/dashboard')}
@@ -482,7 +475,7 @@ export default function TodoDetailPage() {
                                                 <div className="d-flex justify-content-between align-items-center">
                                                     <div>
                                                         <div>{user.email}</div>
-                                                        <div className="text-muted small">
+                                                        <div className="text-bold small">
                                                             {t('todoDetail.share.permission.title')}: {user.canEdit ?
                                                             t('todoDetail.share.permission.edit') :
                                                             t('todoDetail.share.permission.view')}
