@@ -151,7 +151,12 @@ export default function AdminDashboard() {
                                         {users.map((user) => (
                                             <tr key={user._id}>
                                                 <td>{user.email}</td>
-                                                <td className="text-capitalize">{user.role}</td>
+                                                <td>
+                                                    <span className={`text-white badge ${user.role === 'admin' ? 'bg-yellow' : 'bg-blue'}`}>
+                                                        {user.role}
+                                                    </span>
+
+                                                </td>
                                                 <td className="text-end">
                                                     {user.role !== 'admin' ? (
                                                         <button
