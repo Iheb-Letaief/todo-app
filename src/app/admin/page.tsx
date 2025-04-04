@@ -171,8 +171,8 @@ export default function AdminDashboard() {
                                                         </button>
                                                     ) : (
                                                         <span className="text-muted">
-                                                                {t('auth.admin.cannotDeleteAdmin')}
-                                                            </span>
+                                                            {t('auth.admin.cannotDeleteAdmin')}
+                                                        </span>
                                                     )}
                                                 </td>
                                             </tr>

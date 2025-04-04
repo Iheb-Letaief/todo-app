@@ -3,9 +3,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import {I18nextProvider} from "react-i18next";
-import i18n from "i18next";
-import 'bootstrap/dist/js/bootstrap.bundle.min';
+
 import '@tabler/core/dist/css/tabler.min.css';
 import '@tabler/core/dist/css/tabler-flags.min.css';
 import {Providers} from "@/app/providers";
@@ -33,43 +31,47 @@ export default function RootLayout({
                                    }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem('theme');
-      if (storedTheme) {
-        return storedTheme === 'dark';
-      } else {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        return isDark;
-      }
-    }
-    return false;
-  });
+    const [mounted, setMounted] = useState(false);
+    const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-      require('@tabler/core/dist/js/tabler.min.js');
-      require('@tabler/core/dist/css/tabler-flags.min.css');
-  }, []);
+    useEffect(() => {
+        const storedTheme = localStorage.getItem('theme');
+        const isDark = storedTheme
+            ? storedTheme === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        setDarkMode(isDark);
+        setMounted(true);
+    }, []);
+
+
+    useEffect(() => {
+        import('bootstrap')
+            .then(() => {
+                require('@tabler/core/dist/js/tabler.min.js');
+                require('@tabler/core/dist/css/tabler-flags.min.css');
+            });
+    }, []);
+
+
 
   return (
       <html lang="en" data-bs-theme={darkMode ? 'dark' : 'light'}>
-
       <head>
-        <meta charSet="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler-flags.min.css" />
-
+          <meta charSet="utf-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1"/>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <div className="absolute top-4 right-4 z-50">
-        <div className="space-x-3">
-          <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <TranslationToggle/>
-        </div>
-      </div>
       <Providers>
-        {children}
+          {mounted && (
+              <div className="absolute top-4 right-4 z-50">
+                  <div className="space-x-3">
+                      <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+                      <TranslationToggle/>
+                  </div>
+              </div>
+          )}
+          {children}
       </Providers>
       </body>
       </html>

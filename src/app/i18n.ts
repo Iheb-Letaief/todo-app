@@ -10,8 +10,16 @@ i18n
         resources,
         fallbackLng: 'en',
         interpolation: {
-            escapeValue: false
-        }
+            escapeValue: false,
+        },
+        detection: {
+            order: ['localStorage', 'navigator'],
+            caches: ['localStorage'],
+            lookupLocalStorage: 'i18nextLng',
+        },
+        react: {
+            useSuspense: false,
+        },
     });
 
 export default i18n;
