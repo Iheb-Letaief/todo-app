@@ -137,7 +137,8 @@ export default function TodoDetailPage() {
 
     const handleToggleComplete = async (taskId: string, currentStatus: boolean) => {
         try {
-            await axios.put(
+            setLoading(true);
+            const response = await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`,
                 { completed: !currentStatus },
                 {
@@ -148,22 +149,42 @@ export default function TodoDetailPage() {
                 }
             );
 
-            setTasks((prev) =>
-                prev.map((task) =>
-                    task._id === taskId ? { ...task, completed: !currentStatus } : task
-                )
-            );
+            if (response.status === 200) {
+                setTasks((prev) =>
+                    prev.map((task) =>
+                        task._id === taskId ? { ...task, completed: !currentStatus } : task
+                    )
+                );
+            }
         } catch (error) {
             console.error('Error toggling task status:', error);
+            // Optionally add toast notification here
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDeleteTask = async (taskId: string) => {
-        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        try {
+            setLoading(true);
+            const response = await axios.delete(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/tasks/${taskId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                }
+            );
 
-        setTasks((prev) => prev.filter((task) => task._id !== taskId));
+            if (response.status === 200) {
+                setTasks((prev) => prev.filter((task) => task._id !== taskId));
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const incompleteTasks = tasks.filter((task) => !task.completed);
@@ -177,7 +198,10 @@ export default function TodoDetailPage() {
                     return;
                 }
                 const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
                 });
 
                 const mapped = res.data.sharedWith.map((u: any) => ({
@@ -203,18 +227,22 @@ export default function TodoDetailPage() {
         if (!shareEmail.trim()) return;
 
         try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: shareEmail, canEdit }),
-            });
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`,
+                { email: shareEmail, canEdit },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
 
-            setSharedUsers((prev) => [...prev, { email: shareEmail, canEdit }]);
-            setShareEmail('');
-            setCanEdit(false);
-
+            if (res.status === 200) {
+                setSharedUsers((prev) => [...prev, { email: shareEmail, canEdit }]);
+                setShareEmail('');
+                setCanEdit(false);
+            }
         } catch (err) {
             console.error('Error sharing:', err);
         }
@@ -222,21 +250,24 @@ export default function TodoDetailPage() {
 
     const handleTogglePermission = async (email: string, newPermission: boolean) => {
         try {
-            const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, canEdit: newPermission }),
-            });
-
-            setSharedUsers((prev) =>
-                prev.map((user) =>
-                    user.email === email ? { ...user, canEdit: newPermission } : user
-                )
+            const res = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/share`,
+                { email, canEdit: newPermission },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
             );
 
-
+            if (res.status === 200) {
+                setSharedUsers((prev) =>
+                    prev.map((user) =>
+                        user.email === email ? { ...user, canEdit: newPermission } : user
+                    )
+                );
+            }
         } catch (err) {
             console.error('Failed to update permission:', err);
         }
@@ -244,16 +275,20 @@ export default function TodoDetailPage() {
 
     const handleUnshare = async (email: string) => {
         try {
-            const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/unshare`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                data: { email }
-            });
+            const res = await axios.delete(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}/unshare`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: { email }
+                }
+            );
 
-            setSharedUsers((prev) => prev.filter((user) => user.email !== email));
-
+            if (res.status === 200) {
+                setSharedUsers((prev) => prev.filter((user) => user.email !== email));
+            }
         } catch (err) {
             console.error('Failed to unshare:', err);
         }
