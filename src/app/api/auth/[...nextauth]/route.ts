@@ -1,8 +1,9 @@
-import NextAuth from "next-auth/next";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
 const handler = NextAuth({
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -44,7 +45,6 @@ const handler = NextAuth({
             },
         }),
     ],
-    secret: process.env.JWT_SECRET,
     callbacks: {
         async jwt({ token, user }) {
             // Initial sign in
@@ -73,7 +73,6 @@ const handler = NextAuth({
     session: {
         strategy: "jwt",
         maxAge: 5 * 24 * 60 * 60, // 5 days
-        updateAge: 24 * 60 * 60,
     },
 
 

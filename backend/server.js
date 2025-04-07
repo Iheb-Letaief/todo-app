@@ -24,7 +24,7 @@ fastify.register(cors, {
 });
 
 fastify.register(fastifyJwt, {
-    secret: process.env.JWT_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     sign: { expiresIn: "5d" }
 });
 

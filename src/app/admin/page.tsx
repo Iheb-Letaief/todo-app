@@ -30,7 +30,11 @@ export default function AdminDashboard() {
 
     useEffect(() => {
 
-        if (!token) {
+        if (session === undefined) {
+            return; // Wait for session to resolve
+        }
+
+        if(!token){
             router.push('/login');
             return;
         }

@@ -15,13 +15,14 @@
 export async function authenticateAdmin(request, reply) {
     try {
         const authHeader = request.headers.authorization;
-        if (!authHeader) throw new Error("No token provided");
+        if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error("No token provided");
 
         const token = authHeader.split(" ")[1];
         const decoded = await request.jwtVerify();
-        if (decoded.role !== "admin") throw new Error("Unauthorized");
 
         request.user = decoded;
+        if (decoded.role !== "admin") throw new Error("Unauthorized");
+
     } catch (error) {
         return reply.status(401).send({ message: "Unauthorized" });
     }
