@@ -25,17 +25,17 @@ export default function AdminDashboard() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
-    const { data: session } = useSession();
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            router.push('/login');
+        }
+    });
     const token = session?.token;
 
     useEffect(() => {
 
-        if (session === undefined) {
-            return; // Wait for session to resolve
-        }
-
-        if(!token){
-            router.push('/login');
+        if (status !== 'authenticated' || !session?.token) {
             return;
         }
 
