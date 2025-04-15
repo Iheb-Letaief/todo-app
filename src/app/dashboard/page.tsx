@@ -10,8 +10,7 @@ import {
     IconPencil,
     IconLoader,
     IconClipboardX,
-    IconMoon,
-    IconSun,
+    IconWand,
 } from '@tabler/icons-react';
 import { useSession } from "next-auth/react";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -32,6 +31,7 @@ type SharedWith = {
 type TodoList = {
     _id: string;
     title: string;
+    description?: string;
     userId: string;
     tasks: Task[];
     sharedWith: SharedWith[];
@@ -45,11 +45,18 @@ export default function DashboardPage() {
     const [todoLists, setTodoLists] = useState<TodoList[]>([]);
     const [newTitle, setNewTitle] = useState('');
     const [user, setUser] = useState<{ name: string } | null>(null);
+
     const [sharedTodoLists, setSharedTodoLists] = useState<TodoList[]>([]);
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
+
+    const [generatingDescriptions, setGeneratingDescriptions] = useState<string[]>([]);
     const [darkMode, setDarkMode] = useState(false);
     const router = useRouter();
+
+    const [newDescription, setNewDescription] = useState('');
+    const [generatingNewDescription, setGeneratingNewDescription] = useState(false);
+
 
     const { data: session, status } = useSession({
         required: true,
@@ -96,6 +103,30 @@ export default function DashboardPage() {
         fetchTodos();
     }, [status, session]);
 
+    const handleGenerateNewDescription = async () => {
+        if (!newTitle.trim() || !session?.token) return;
+
+        setGeneratingNewDescription(true);
+        try {
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/generate-description`,
+                { title: newTitle },
+                {
+                    headers: {
+                        Authorization: `Bearer ${session.token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            setNewDescription(res.data.description);
+        } catch (error) {
+            console.error('Erreur lors de la génération de description:', error);
+        } finally {
+            setGeneratingNewDescription(false);
+        }
+    };
+
     const handleCreate = async () => {
         if (!newTitle.trim() || !session?.token) return;
         setLoading(true);
@@ -103,7 +134,10 @@ export default function DashboardPage() {
         try {
             const res = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/todos`,
-                { title: newTitle },
+                {
+                    title: newTitle,
+                    description: newDescription,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${session.token}`,
@@ -114,6 +148,7 @@ export default function DashboardPage() {
 
             setTodoLists((prev) => [...prev, res.data]);
             setNewTitle('');
+            setNewDescription('');
         } catch (error) {
             console.error('Error adding todo:', error);
         } finally {
@@ -134,6 +169,38 @@ export default function DashboardPage() {
             setTodoLists((prev) => prev.filter((todo) => todo._id !== id));
         } catch (error) {
             console.error('Error deleting todo:', error);
+        }
+    };
+
+    const handleGenerateDescription = async (todoId: string) => {
+        if (!session?.token) return;
+
+        setGeneratingDescriptions(prev => [...prev, todoId]);
+
+
+        try {
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${todoId}/generate-description`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${session.token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            setTodoLists((prev) =>
+                prev.map(todo =>
+                    todo._id === todoId
+                        ? { ...todo, description: res.data.description }
+                        : todo
+                )
+            );
+        } catch (error) {
+            console.error('Erreur lors de la génération:', error);
+        } finally {
+            setGeneratingDescriptions(prev => prev.filter(id => id !== todoId));
         }
     };
 
@@ -169,22 +236,51 @@ export default function DashboardPage() {
                             <h3 className="card-title">{t('dashboard.create.title')}</h3>
                         </div>
                         <div className="card-body">
-                            <div className="input-group">
+                            <div className="form-group mb-3">
+                                <label htmlFor="newTodoTitle" className="form-label">
+                                    {t('dashboard.create.titleLabel')}
+                                </label>
                                 <input
                                     type="text"
                                     value={newTitle}
                                     onChange={(e) => setNewTitle(e.target.value)}
                                     placeholder={t('dashboard.create.placeholder')}
-                                    className="form-control"
+                                    className="form-control mb-2"
                                 />
-                                <button
-                                    onClick={handleCreate}
-                                    disabled={loading}
-                                    className="btn btn-primary"
-                                >
-                                    {loading ? <IconLoader className="icon icon-tabler-loader animate-spin" /> : <IconPlus className="icon" />}
-                                    {t('dashboard.create.add')}
-                                </button>
+                                <div className="form-group mb3">
+                                    <label htmlFor="newTodoDescription" className="form-label">
+                                        {t('dashboard.create.descriptionLabel')}
+                                    </label>
+                                    <textarea
+                                        value={newDescription}
+                                        onChange={(e) => setNewDescription(e.target.value)}
+                                        placeholder={t('dashboard.create.descriptionPlaceholder')}
+                                        className="form-control"
+                                        rows={3}
+                                    />
+                                </div>
+                                <div className="mt-3 space-x-2">
+                                    <button
+                                        onClick={handleGenerateNewDescription}
+                                        disabled={generatingNewDescription || !newTitle.trim()}
+                                        className="btn btn-secondary"
+                                    >
+                                        {generatingNewDescription ? (
+                                            <IconLoader className="icon icon-tabler-loader animate-spin" />
+                                        ) : (
+                                            <IconWand className="icon" />
+                                        )}{" "}
+                                        {t('dashboard.create.generateDescription') || "Générer"}
+                                    </button>
+                                    <button
+                                        onClick={handleCreate}
+                                        disabled={loading || !newTitle.trim()}
+                                        className="btn btn-primary"
+                                    >
+                                        {loading ? <IconLoader className="icon icon-tabler-loader animate-spin" /> : <IconPlus className="icon" />}
+                                        {t('dashboard.create.add')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -222,7 +318,10 @@ export default function DashboardPage() {
                                                 </span>
                                             </div>
 
+
+
                                             <div className="d-flex justify-content-end gap-2">
+
                                                 <button
                                                     onClick={() => router.push(`/dashboard/todos/${todo._id}`)}
                                                     className="btn btn-link"

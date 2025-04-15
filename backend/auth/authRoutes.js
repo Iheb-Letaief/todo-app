@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import User from "../models/User.js";
 import fastify from "fastify";
 import crypto from "crypto";
-import {sendEmail} from "./services/emailService.js";
+import {renderPasswordResetEmail, sendEmail} from "./services/emailService.js";
 
 
 dotenv.config();
@@ -84,22 +84,17 @@ export default async function authRoutes(fastify, options) {
 
             // Generate reset token
             const token = crypto.randomBytes(32).toString("hex");
-            resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 }; // Expires in 15 mins
+            resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 }; // Expires in 15 minutes
 
-            // Send Reset Email
+            // Render and send reset email
             const resetLink = `${process.env.FRONTEND_URL}/login/reset-password?token=${token}`;
-            const emailHtml = `
-      <h2>Password Reset</h2>
-      <p>Click the link below to reset your password:</p>
-      <a href="${resetLink}">Reset Password</a>
-      <p>This link expires in 15 minutes.</p>
-    `;
+            const emailHtml = renderPasswordResetEmail({ resetLink });
 
-            await sendEmail(email, "Password Reset", emailHtml);
+            await sendEmail(email, "Password Reset Request - TodoApp", emailHtml);
 
             return reply.send({ message: "Password reset email sent" });
         } catch (error) {
-            console.error(error);
+            console.error("Reset password error:", error);
             return reply.status(500).send({ message: "Server error" });
         }
     });

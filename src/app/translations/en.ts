@@ -104,8 +104,12 @@ export const en = {
         welcome: 'Welcome',
         create: {
             title: 'Create new Todo List',
+            titleLabel: 'Title',
+            descriptionLabel: 'Description',
             placeholder: 'New List Title',
-            add: 'Add'
+            add: 'Add',
+            descriptionPlaceholder: 'Description (optional)',
+            generateDescription: 'Generate a description',
         },
         stats: {
             completion: 'done'
@@ -119,7 +123,7 @@ export const en = {
         },
         actions: {
             viewEdit: 'View / Edit',
-            delete: 'Delete'
+            delete: 'Delete',
         }
     },
 
@@ -136,6 +140,8 @@ export const en = {
         markIncomplete: 'Mark Incomplete',
         deleteTask: 'Delete Task',
         viewOnly: '(You cannot edit this list.)',
+        saveDescription: 'Save Description',
+        cancel: 'Cancel',
         share: {
             title: 'Share This Todo List',
             emailPlaceholder: "User's email",

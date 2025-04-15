@@ -33,6 +33,10 @@ export default function TodoDetailPage() {
     const { t } = useTranslation();
 
     const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const [editedDescription, setEditedDescription] = useState('');
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [loading, setLoading] = useState(true);
@@ -90,6 +94,7 @@ export default function TodoDetailPage() {
                 );
 
                 setTitle(data.title);
+                setDescription(data.description || '');
                 setTasks(data.tasks || []);
 
                 if (data.userId.toString() === userId) {
@@ -111,6 +116,28 @@ export default function TodoDetailPage() {
             fetchTodo();
         }
     }, [id, session, status, userId, router]);
+
+    const handleSaveDescription = async () => {
+        try {
+            const response = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/todos/${id}`,
+                { description: editedDescription },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                setDescription(editedDescription);
+                setIsEditingDescription(false);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour de la description:', error);
+        }
+    };
 
     const handleAddTask = async () => {
         if (!newTaskTitle.trim()) return;
@@ -158,7 +185,6 @@ export default function TodoDetailPage() {
             }
         } catch (error) {
             console.error('Error toggling task status:', error);
-            // Optionally add toast notification here
         } finally {
             setLoading(false);
         }
@@ -322,6 +348,11 @@ export default function TodoDetailPage() {
                                     <span className="text-muted ms-2 small">{t('todoDetail.viewOnly')}</span>
                                 )}
                             </h2>
+                            {description && (
+                                <p className="text-muted mt-2 ml-2 mb-0">
+                                    {description}
+                                </p>
+                            )}
                         </div>
                         <div className="p-3">
                             <div className="d-flex justify-content-between align-items-center mb-2">

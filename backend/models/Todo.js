@@ -18,6 +18,10 @@ const TodoSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        description: {
+            type: String,
+            default: "",
+        },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

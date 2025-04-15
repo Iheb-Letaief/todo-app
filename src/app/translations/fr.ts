@@ -104,8 +104,12 @@ export const fr = {
         welcome: 'Bienvenue',
         create: {
             title: 'Créer une nouvelle liste Todo',
+            titleLabel: 'Titre',
+            descriptionLabel: 'Description',
             placeholder: 'Titre de la nouvelle liste',
-            add: 'Ajouter'
+            add: 'Ajouter',
+            descriptionPlaceholder: 'Description (optionnelle)',
+            generateDescription: 'Générer une description',
         },
         stats: {
             completion: 'terminé'
@@ -119,7 +123,7 @@ export const fr = {
         },
         actions: {
             viewEdit: 'Voir / Modifier',
-            delete: 'Supprimer'
+            delete: 'Supprimer',
         }
     },
 
@@ -136,6 +140,8 @@ export const fr = {
         markIncomplete: 'Marquer comme non terminé',
         deleteTask: 'Supprimer la tâche',
         viewOnly: '(Vous ne pouvez pas modifier cette liste.)',
+        saveDescription: 'Enregistrer la description',
+        cancel: 'Annuler',
         share: {
             title: 'Partager cette liste de tâches',
             emailPlaceholder: "Email de l'utilisateur",

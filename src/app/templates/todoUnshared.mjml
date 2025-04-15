@@ -1,7 +1,6 @@
 <mjml>
     <mj-head>
-        <mj-title>Password Reset Request</mj-title>
-        <mj-preview>Reset your TodoApp password with this secure link</mj-preview>
+        <mj-title>Todo List Access Removed</mj-title>
         <mj-attributes>
             <mj-all font-family="Helvetica, Arial, sans-serif" />
             <mj-text font-size="16px" color="#333333" line-height="24px" />
@@ -9,7 +8,6 @@
         </mj-attributes>
         <mj-style inline="inline">
             .header { background-color: #f8f9fa; }
-            .primary-button { background-color: #5c6bc0; padding: 12px 20px; border-radius: 4px; color: white; text-decoration: none; }
             .footer-text { color: #666; font-size: 14px; }
             .highlight { color: #5c6bc0; font-weight: bold; }
             .card { border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -21,10 +19,10 @@
         <mj-section css-class="header" padding-top="0">
             <mj-column>
                 <mj-text align="center" font-size="26px" font-weight="bold" padding-top="10px">
-                    Password Reset
+                    TodoList Collaboration
                 </mj-text>
                 <mj-text align="center" color="#666">
-                    Secure link to reset your password
+                    Access to a to-do list has been removed
                 </mj-text>
                 <mj-divider border-width="1px" border-color="#e0e0e0" padding="10px 0" />
             </mj-column>
@@ -37,23 +35,23 @@
                     Hello,
                 </mj-text>
                 <mj-text>
-                    We received a request to reset your password for your <span class="highlight">TodoApp</span> account.
+                    <span class="highlight">{{OWNER_NAME}}</span> has removed your access to the to-do list:
+                </mj-text>
+                <mj-text font-size="20px" font-weight="bold" color="#5c6bc0" align="center" padding="10px 25px">
+                    {{TODO_TITLE}}
                 </mj-text>
                 <mj-text padding-bottom="20px">
-                    Click the button below to set a new password. This link will expire in 15 minutes for security reasons.
+                    You no longer have access to view or edit this to-do list.
                 </mj-text>
-                <mj-button background-color="#5c6bc0" href="{{RESET_LINK}}" border-radius="4px" width="200px">
-                    Reset Password
-                </mj-button>
             </mj-column>
         </mj-section>
 
-        <!-- Security Tip -->
+        <!-- Usage Tip -->
         <mj-section background-color="#ffffff" padding-top="0" css-class="card">
             <mj-column>
                 <mj-divider border-width="1px" border-color="#e0e0e0" padding="0 0 20px 0" />
                 <mj-text font-style="italic" color="#666" font-size="14px">
-                    <strong>Security Notice:</strong> If you did not request this password reset, please ignore this email or contact support if you have concerns about your account security.
+                    <strong>Tip:</strong> Check your account for other shared to-do lists you still have access to.
                 </mj-text>
             </mj-column>
         </mj-section>

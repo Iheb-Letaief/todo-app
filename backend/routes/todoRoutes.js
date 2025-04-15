@@ -2,6 +2,9 @@
 import Todo from "../models/Todo.js";
 import User from "../models/User.js";
 import {authenticate} from "../auth/authRoutes.js";
+import { generateDescription } from "../services/aiService.js";
+import {renderShareTodoEmail, renderTodoUnsharedEmail, sendEmail} from "../auth/services/emailService.js";
+
 
 export default async function todoRoutes(fastify) {
     // Create a new Todo List
@@ -139,6 +142,52 @@ export default async function todoRoutes(fastify) {
             return reply.status(200).send(user);
         } catch (error) {
             console.error("Error fetching user data:", error);
+            return reply.status(500).send({ error: "Internal Server Error" });
+        }
+    });
+    // Generate description without creating a todo
+    fastify.post("/generate-description", { preHandler: authenticate }, async (req, reply) => {
+        try {
+            const { title } = req.body;
+
+            if (!title) {
+                return reply.status(400).send({ error: "Title is required" });
+            }
+
+            const description = await generateDescription(title);
+            return reply.status(200).send({ description });
+        } catch (error) {
+            console.error("Error generating description:", error);
+            return reply.status(500).send({ error: "Internal Server Error" });
+        }
+    });
+
+    // Generate a description for a Todo List
+    fastify.post("/todos/:id/generate-description", { preHandler: authenticate }, async (req, reply) => {
+        try {
+            const { id } = req.params;
+            const userId = req.user.id;
+
+            const todo = await Todo.findOne({
+                _id: id,
+                $or: [
+                    { userId },
+                    { "sharedWith.userId": userId }
+                ]
+            });
+
+            if (!todo) {
+                return reply.status(404).send({ error: "Todo list not found" });
+            }
+
+            const description = await generateDescription(todo.title);
+
+            todo.description = description;
+            await todo.save();
+
+            return reply.status(200).send({ description });
+        } catch (error) {
+            console.error("Error generating description:", error);
             return reply.status(500).send({ error: "Internal Server Error" });
         }
     });
@@ -289,6 +338,24 @@ export default async function todoRoutes(fastify) {
             todo.sharedWith.push({ userId: userToShareWith._id, email: userToShareWith.email, canEdit });
             await todo.save();
 
+            const owner = await User.findById(ownerId).select("name");
+            const todoLink = `${process.env.FRONTEND_URL}/dashboard/todos/${id}`;
+            const permission = canEdit ? "Edit" : "View";
+            const htmlContent = renderShareTodoEmail({
+                ownerName: owner.name || "A user",
+                todoTitle: todo.title,
+                permission,
+                todoLink,
+            });
+
+
+            // Send the email
+            await sendEmail(
+                userToShareWith.email,
+                `Todo List Shared: ${todo.title}`,
+                htmlContent
+            );
+
             return reply.status(200).send({ message: "Todo list shared successfully" });
         } catch (error) {
             console.error("Error sharing todo list:", error);
@@ -327,8 +394,30 @@ export default async function todoRoutes(fastify) {
                 return reply.status(404).send({ error: "User not found" });
             }
 
-            todo.sharedWith = todo.sharedWith.filter((share) => share.userId.toString() !== userToUnshare._id.toString());
+            const sharedUser = todo.sharedWith.find(
+                (share) => share.userId.toString() === userToUnshare._id.toString()
+            );
+            if (!sharedUser) {
+                return reply.status(400).send({ error: "User not shared with this todo list" });
+            }
+
+            todo.sharedWith = todo.sharedWith.filter(
+                (share) => share.userId.toString() !== userToUnshare._id.toString()
+            );
             await todo.save();
+
+            // Send unshare notification email
+            const owner = await User.findById(ownerId).select("name");
+            const htmlContent = renderTodoUnsharedEmail({
+                ownerName: owner?.name || "A user",
+                todoTitle: todo.title,
+            });
+
+            await sendEmail(
+                userToUnshare.email,
+                `Access Removed: ${todo.title}`,
+                htmlContent
+            );
 
             return reply.status(200).send({ message: "Todo list unshared successfully" });
         } catch (error) {
