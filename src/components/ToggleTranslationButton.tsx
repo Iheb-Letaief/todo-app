@@ -3,12 +3,15 @@
 import { useTranslation } from 'react-i18next';
 import {useEffect, useRef, useState} from 'react';
 import {IconLanguage} from "@tabler/icons-react";
+import axios from "axios";
+import { useSession } from 'next-auth/react';
 
 export default function TranslationToggle() {
     const { i18n } = useTranslation();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { data: session } = useSession();
 
     useEffect(() => {
         setMounted(true);
@@ -25,9 +28,28 @@ export default function TranslationToggle() {
         };
     }, []);
 
-    const changeLanguage = (lang: string) => {
-        i18n.changeLanguage(lang);
-        setIsOpen(false);
+    const changeLanguage = async (lang: string) => {
+        try {
+            // Update local i18n
+            await i18n.changeLanguage(lang);
+            setIsOpen(false);
+
+            // Update backend if authenticated
+            if (session?.token) {
+                await axios.put(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/auth/user/language`,
+                    { language: lang },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${session.token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
+        } catch (error) {
+            console.error("Error updating language:", error);
+        }
     };
 
     // Don't render anything until mounted to prevent hydration mismatch

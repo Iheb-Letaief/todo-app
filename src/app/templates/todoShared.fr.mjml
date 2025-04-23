@@ -1,7 +1,6 @@
 <mjml>
     <mj-head>
-        <mj-title>Password Reset Request</mj-title>
-        <mj-preview>Reset your TodoApp password with this secure link</mj-preview>
+        <mj-title>Collaboration sur Liste de Tâches</mj-title>
         <mj-attributes>
             <mj-all font-family="Helvetica, Arial, sans-serif" />
             <mj-text font-size="16px" color="#333333" line-height="24px" />
@@ -17,55 +16,54 @@
     </mj-head>
 
     <mj-body background-color="#f5f5f5">
-        <!-- Banner -->
         <mj-section css-class="header" padding-top="0">
             <mj-column>
                 <mj-text align="center" font-size="26px" font-weight="bold" padding-top="10px">
-                    Password Reset
+                    Collaboration sur Liste de Tâches
                 </mj-text>
                 <mj-text align="center" color="#666">
-                    Secure link to reset your password
+                    Une liste de tâches a été partagée avec vous
                 </mj-text>
                 <mj-divider border-width="1px" border-color="#e0e0e0" padding="10px 0" />
             </mj-column>
         </mj-section>
 
-        <!-- Main Content -->
         <mj-section background-color="#ffffff" css-class="card">
             <mj-column>
                 <mj-text font-size="18px" font-weight="bold">
-                    Hello,
+                    Bonjour,
                 </mj-text>
                 <mj-text>
-                    We received a request to reset your password for your <span class="highlight">TodoApp</span> account.
+                    <span class="highlight">{{OWNER_NAME}}</span> a partagé une liste de tâches avec vous :
+                </mj-text>
+                <mj-text font-size="20px" font-weight="bold" color="#5c6bc0" align="center" padding="10px 25px">
+                    {{TODO_TITLE}}
+                </mj-text>
+                <mj-text>
+                    Type d'accès : <span class="highlight">{{PERMISSION}}</span>
                 </mj-text>
                 <mj-text padding-bottom="20px">
-                    Click the button below to set a new password. This link will expire in 15 minutes for security reasons.
+                    Vous pouvez maintenant collaborer sur cette liste de tâches.
                 </mj-text>
-                <mj-button background-color="#5c6bc0" href="{{RESET_LINK}}" border-radius="4px" width="200px">
-                    Reset Password
-                </mj-button>
             </mj-column>
         </mj-section>
 
-        <!-- Security Tip -->
         <mj-section background-color="#ffffff" padding-top="0" css-class="card">
             <mj-column>
                 <mj-divider border-width="1px" border-color="#e0e0e0" padding="0 0 20px 0" />
                 <mj-text font-style="italic" color="#666" font-size="14px">
-                    <strong>Security Notice:</strong> If you did not request this password reset, please ignore this email or contact support if you have concerns about your account security.
+                    <strong>Astuce :</strong> Connectez-vous à votre compte pour accéder à toutes les listes partagées avec vous.
                 </mj-text>
             </mj-column>
         </mj-section>
 
-        <!-- Footer -->
         <mj-section>
             <mj-column>
                 <mj-text align="center" css-class="footer-text" padding-top="20px">
-                    This email was sent automatically, please do not reply.
+                    Cet e-mail a été envoyé automatiquement, veuillez ne pas répondre.
                 </mj-text>
                 <mj-text align="center" css-class="footer-text">
-                    2025 TodoApp - All rights reserved
+                    2025 TodoApp - Tous droits réservés
                 </mj-text>
             </mj-column>
         </mj-section>

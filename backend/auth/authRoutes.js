@@ -72,10 +72,26 @@ export default async function authRoutes(fastify, options) {
         return reply.send({ user: req.user });
     });
 
+    // Update user language
+    fastify.put("/user/language", { preHandler: authenticate }, async (req, reply) => {
+        try {
+            const { language } = req.body;
+            if (!["en", "fr"].includes(language)) {
+                return reply.status(400).send({ message: "Unsupported language" });
+            }
+
+            await User.findByIdAndUpdate(req.user.id, { language });
+            return reply.send({ message: "Language updated" });
+        } catch (error) {
+            console.error("Error updating language:", error);
+            return reply.status(500).send({ message: "Server error" });
+        }
+    });
+
     // Request Password Reset
     fastify.post("/reset-password", async (req, reply) => {
         try {
-            const { email } = req.body;
+            const { email, language } = req.body;
             const user = await User.findOne({ email });
 
             if (!user) {
@@ -88,9 +104,12 @@ export default async function authRoutes(fastify, options) {
 
             // Render and send reset email
             const resetLink = `${process.env.FRONTEND_URL}/login/reset-password?token=${token}`;
-            const emailHtml = renderPasswordResetEmail({ resetLink });
+            const { html, subject } = renderPasswordResetEmail({
+                resetLink,
+                language,
+            });
 
-            await sendEmail(email, "Password Reset Request - TodoApp", emailHtml);
+            await sendEmail(email, subject, html);
 
             return reply.send({ message: "Password reset email sent" });
         } catch (error) {

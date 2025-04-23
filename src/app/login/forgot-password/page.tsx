@@ -6,7 +6,7 @@ import Link from "next/link";
 import axios from "axios";
 
 const ForgotPassword = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const ForgotPassword = () => {
         try {
             await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`,
-                { email },
+                { email, language: i18n.language },
                 {
                     headers: { "Content-Type": "application/json" }
                 }

@@ -8,10 +8,20 @@ dotenv.config();
 
 
 const templates = {
-    todoShared: path.resolve("../src/app/templates/todoShared.mjml"),
-    passwordReset: path.resolve("../src/app/templates/passwordReset.mjml"),
-    todoUnshared: path.resolve("../src/app/templates/todoUnshared.mjml"),
-}
+    todoShared: {
+        en: path.resolve("../src/app/templates/todoShared.en.mjml"),
+        fr: path.resolve("../src/app/templates/todoShared.fr.mjml"),
+    },
+    passwordReset: {
+        en: path.resolve("../src/app/templates/passwordReset.en.mjml"),
+        fr: path.resolve("../src/app/templates/passwordReset.fr.mjml"),
+    },
+    todoUnshared: {
+        en: path.resolve("../src/app/templates/todoUnshared.en.mjml"),
+        fr: path.resolve("../src/app/templates/todoUnshared.fr.mjml"),
+    },
+};
+
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -36,66 +46,62 @@ export const sendEmail = async (to, subject, html) => {
     } catch (error) {
         console.error("Email sending failed:", error);
     }
-};
+}
 
-export const renderShareTodoEmail = ({ ownerName, todoTitle, permission, todoLink }) => {
+const renderEmail = (templatePath, data) => {
     try {
-        // Read the MJML template
-        const mjmlTemplate = fs.readFileSync(templates.todoShared, "utf-8");
+        const mjmlTemplate = fs.readFileSync(templatePath, "utf-8");
 
         // Replace placeholders
-        let mjmlContent = mjmlTemplate
-            .replace("{{OWNER_NAME}}", ownerName)
-            .replace("{{TODO_TITLE}}", todoTitle)
-            .replace("{{PERMISSION}}", permission)
-            .replace("{{TODO_LINK}}", todoLink);
-
-        // Render MJML to HTML
-        const { html } = mjml2html(mjmlContent);
-        return html;
-    } catch (error) {
-        console.error("Error rendering MJML template:", error);
-        throw error;
-    }
-};
-
-export const renderTodoUnsharedEmail = ({ ownerName, todoTitle }) => {
-    try {
-        const mjmlTemplate = fs.readFileSync(templates.todoUnshared, "utf-8");
-
-        let mjmlContent = mjmlTemplate
-            .replace("{{OWNER_NAME}}", ownerName || "A user")
-            .replace("{{TODO_TITLE}}", todoTitle || "Untitled Todo");
+        let mjmlContent = mjmlTemplate;
+        if (data.ownerName) {
+            mjmlContent = mjmlContent.replace("{{OWNER_NAME}}", data.ownerName || "A user");
+        }
+        if (data.todoTitle) {
+            mjmlContent = mjmlContent.replace("{{TODO_TITLE}}", data.todoTitle || "Untitled Todo");
+        }
+        if (data.permission) {
+            mjmlContent = mjmlContent.replace("{{PERMISSION}}", data.permission || "Unknown");
+        }
+        if (data.todoLink) {
+            mjmlContent = mjmlContent.replace("{{TODO_LINK}}", data.todoLink || "#");
+        }
+        if (data.resetLink) {
+            mjmlContent = mjmlContent.replace("{{RESET_LINK}}", data.resetLink || "#");        }
 
         const { html, errors } = mjml2html(mjmlContent, { validationLevel: "strict" });
         if (errors.length) {
-            console.error("MJML rendering errors for todoUnshared:", errors);
+            console.error(`MJML rendering errors for ${templatePath}:`, errors);
         }
 
         return html;
     } catch (error) {
-        console.error("Error rendering todoUnshared MJML template:", error);
+        console.error(`Error rendering MJML template ${templatePath}:`, error);
         throw error;
     }
 };
 
-export const renderPasswordResetEmail = ({ resetLink }) => {
-    try {
-        // Read the MJML template
-        const mjmlTemplate = fs.readFileSync(templates.passwordReset, "utf-8");
 
-        // Replace placeholder
-        let mjmlContent = mjmlTemplate.replace("{{RESET_LINK}}", resetLink || "#");
+export const renderShareTodoEmail = ({ ownerName, todoTitle, permission, todoLink, language = "en" }) => {
+    if (!["en", "fr"].includes(language)) language = "en";
+    const templatePath = templates.todoShared[language];
+    const html = renderEmail(templatePath, { ownerName, todoTitle, permission, todoLink });
+    const subject = `Todo List Shared: ${todoTitle || "Untitled Todo"}`;
+    return { html, subject };
+};
 
-        // Render MJML to HTML
-        const { html, errors } = mjml2html(mjmlContent, { validationLevel: "strict" });
-        if (errors.length) {
-            console.error("MJML rendering errors for passwordReset:", errors);
-        }
+export const renderTodoUnsharedEmail = ({ ownerName, todoTitle, language = "en" }) => {
+    if (!["en", "fr"].includes(language)) language = "en";
+    const templatePath = templates.todoUnshared[language];
+    const html = renderEmail(templatePath, { ownerName, todoTitle });
+    const subject = `Access Removed: ${todoTitle || "Untitled Todo"}`;
+    return { html, subject };
+};
 
-        return html;
-    } catch (error) {
-        console.error("Error rendering passwordReset MJML template:", error);
-        throw error;
-    }
+export const renderPasswordResetEmail = ({ resetLink, language = "en" }) => {
+    if (!["en", "fr"].includes(language)) language = "en";
+    const templatePath = templates.passwordReset[language];
+    const html = renderEmail(templatePath, { resetLink });
+    const subject = language === "fr" ? "Demande de réinitialisation de mot de passe - TodoApp" : "Password Reset Request - TodoApp";
+    return { html, subject };
 };

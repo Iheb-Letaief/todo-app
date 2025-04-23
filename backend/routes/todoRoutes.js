@@ -341,20 +341,17 @@ export default async function todoRoutes(fastify) {
             const owner = await User.findById(ownerId).select("name");
             const todoLink = `${process.env.FRONTEND_URL}/dashboard/todos/${id}`;
             const permission = canEdit ? "Edit" : "View";
-            const htmlContent = renderShareTodoEmail({
-                ownerName: owner.name || "A user",
+            const { html, subject } = renderShareTodoEmail({
+                ownerName: owner?.name || "A user",
                 todoTitle: todo.title,
                 permission,
                 todoLink,
+                language: userToShareWith.language,
             });
 
 
             // Send the email
-            await sendEmail(
-                userToShareWith.email,
-                `Todo List Shared: ${todo.title}`,
-                htmlContent
-            );
+            await sendEmail(userToShareWith.email, subject, html);
 
             return reply.status(200).send({ message: "Todo list shared successfully" });
         } catch (error) {
@@ -408,16 +405,14 @@ export default async function todoRoutes(fastify) {
 
             // Send unshare notification email
             const owner = await User.findById(ownerId).select("name");
-            const htmlContent = renderTodoUnsharedEmail({
+            const { html, subject } = renderTodoUnsharedEmail({
                 ownerName: owner?.name || "A user",
                 todoTitle: todo.title,
+                language: userToUnshare.language,
             });
 
-            await sendEmail(
-                userToUnshare.email,
-                `Access Removed: ${todo.title}`,
-                htmlContent
-            );
+            await sendEmail(userToUnshare.email, subject, html);
+
 
             return reply.status(200).send({ message: "Todo list unshared successfully" });
         } catch (error) {
